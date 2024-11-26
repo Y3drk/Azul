@@ -6,6 +6,9 @@ class Factory:
         self.factory_number = factory_number
         self.content = [TilePlace() for _ in range(4)]
 
+    def refill(self, new_tiles):
+        self.content = new_tiles
+
     def print(self):
         print("                   +---+---+---+---+")
         floor_line_row_string = f"Factory number {self.factory_number}:  " + "| " + " | ".join(

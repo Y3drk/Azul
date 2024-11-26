@@ -11,10 +11,11 @@ class Server:
 
     def start_game(self, players_number):
         self.game = Game(players_number)
-        self.game.run()
+        self.game.initial_setup()
+        self.game.run(starting_player_id=0)
 
 
 if __name__ == "__main__":
     server = Server()
     server.start_server()
-    server.start_game(3)
+    server.start_game(2)
