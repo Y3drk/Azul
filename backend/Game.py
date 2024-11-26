@@ -18,6 +18,9 @@ class Game:
         self.center = []
         self.factories = [Factory(i, self.tile_manager, self) for i in range(self.players_number * 2 + 1)]
 
+        self.turn_counter = 0
+        self.round_counter = 0
+
     def pick_from_center(self, tile_color):
         picked_tiles_number = len([tile for tile in self.center if tile == tile_color])
         # colors_discarded = [tile for tile in self.center if tile != tile_color]
@@ -98,15 +101,16 @@ class Game:
 
     def run(self, starting_player_id):
         active_player = starting_player_id
-        self.print()
         for number_of_rounds in range(10**6):
-
             # print(f"-  -  -  -  -  It is \"{self.players[active_player].player_name}\" move:")
             self.players[active_player].do_move()
             # self.print()
             active_player = (active_player + 1) % self.players_number
 
+            self.turn_counter += 1
+
             if len(self.center) + len([1 for factory in self.factories if len(factory.content) > 0]) == 0:
+                self.round_counter += 1
                 scores = self.end_of_phase()
                 if scores is not None:
-                    return scores, number_of_rounds
+                    return scores, self.turn_counter, self.round_counter

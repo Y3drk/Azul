@@ -92,6 +92,7 @@ class PlayerBoard:
                     score -= 2
                 else:
                     score -= 3
+        score = max(0, score)
 
         self.tile_manager.discard([tile.current_color for tile in self.floor_line])
         self.floor_line = [TilePlace() for _ in range(7)]
@@ -112,7 +113,7 @@ class PlayerBoard:
                 if self.wall[j][i].current_color is None:
                     full_column = False
                 if self.wall[i][j].current_color is None:
-                    full_color_dict[self.wall[i][j].current_color] = False
+                    full_color_dict[self.wall[i][j].expected_color] = False
             if full_row:
                 points_for_rows += 5
             if full_column:

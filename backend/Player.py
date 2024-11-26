@@ -1,3 +1,6 @@
+from random import randint
+
+
 class Player:
     def __init__(self, player_id, player_name, player_board, tile_manager, game):
         self.player_id = player_id
@@ -9,10 +12,17 @@ class Player:
 
     def __pick_items(self):
         def get_random():
-            for factory_id in range(-1, len(self.game.factories)):
-                for color in range(5):
-                    if self.game.is_valid_pick(factory_id, color):
-                        return factory_id, color
+            for _ in range(1000):
+                factory_id = randint(-1, len(self.game.factories)-1)
+                color = randint(0, 4)
+                if self.game.is_valid_pick(factory_id, color):
+                    return factory_id, color
+            raise Exception("Something is wrong, cant pick random items")
+
+            # for factory_id in range(-1, len(self.game.factories)):
+            #     for color in range(5):
+            #         if self.game.is_valid_pick(factory_id, color):
+            #             return factory_id, color
 
         valid_factory_id, valid_color = get_random()
         picked_tiles_number = self.game.pick(valid_factory_id, valid_color)
@@ -24,10 +34,18 @@ class Player:
     def __put_items(self, picked_tiles_number, color):
 
         def get_random():
-            for row_id in range(5):
+            tries = 0
+            for _ in range(1000):
+                row_id = randint(0, 4)
                 if self.player_board.is_valid_place(row_id, color):
                     return row_id, color
+                tries += 1
             return -1, color
+
+            # for row_id in range(5):
+            #     if self.player_board.is_valid_place(row_id, color):
+            #         return row_id, color
+            # return -1, color
 
         valid_row_id, valid_color = get_random()
         self.player_board.place(valid_row_id, valid_color, picked_tiles_number)
