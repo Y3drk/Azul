@@ -1,6 +1,3 @@
-from backend.game_pieces.TilePlace import TilePlace
-
-
 class Factory:
     def __init__(self, factory_id, tile_manager, game):
         self.factory_id = factory_id
@@ -17,20 +14,21 @@ class Factory:
         self.game.center.extend(colors_moved_to_center)
         self.content = []
 
-        self.refill()
+        # self.refill()
 
         return picked_tiles_number
 
-
     def refill(self):
-        assert len(self.content)==0
+        assert len(self.content) == 0
 
         self.content = self.tile_manager.draw()
 
-
     def print(self):
         print("               +---------------+")
-        floor_line_row_string = f"Factory id {self.factory_id}:  " + "| " + " | ".join(
-            str(item) for item in self.content) + " |"
-        print(floor_line_row_string)
+        if len(self.content)==0:
+            print(f"Factory id {self.factory_id}:  |   -   -   -   |")
+        else:
+            floor_line_row_string = f"Factory id {self.factory_id}:  " + "| " + " | ".join(
+                str(item) for item in self.content) + " |"
+            print(floor_line_row_string)
         print("               +---------------+")

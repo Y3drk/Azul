@@ -13,7 +13,6 @@ class TileManager:
                 self.in_play.remove(tile)
                 self.discarded.append(tile)
 
-
     def draw(self):
         drawn_tiles = []
 
