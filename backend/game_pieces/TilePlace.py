@@ -15,5 +15,5 @@ class TilePlace:
         if self.empty:
             return "."
         if self.current_color is not None:
-            return self.current_color
+            return str(self.current_color)
         return "?"

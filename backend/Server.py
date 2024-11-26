@@ -9,8 +9,8 @@ class Server:
     def start_server(self):
         pass
 
-    def start_game(self, players_number):
-        self.game = Game(players_number)
+    def start_game(self, players_names):
+        self.game = Game(players_names)
         self.game.initial_setup()
         self.game.run(starting_player_id=0)
 
@@ -18,4 +18,8 @@ class Server:
 if __name__ == "__main__":
     server = Server()
     server.start_server()
-    server.start_game(2)
+
+    players_number = 2
+    players_names = ["Player1", "Player2", "Player3", "Player4"][:players_number]
+
+    server.start_game(players_names)
