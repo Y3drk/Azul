@@ -43,7 +43,9 @@ class Player:
         self.score += score
 
     def calculate_final_score(self):
-        return self.score+10 #TODO
+        score = self.player_board.calculate_final_score()
+        self.score += score
+        return self.score
 
     def has_finished(self):
         for row in self.player_board.wall:

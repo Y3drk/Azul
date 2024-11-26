@@ -21,7 +21,7 @@ if __name__ == "__main__":
     server = Server()
     server.start_server()
 
-    players_number = 4
+    players_number = 2
     players_names = ["Player1", "Player2", "Player3", "Player4"][:players_number]
 
     server.start_game(players_names)

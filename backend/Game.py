@@ -1,3 +1,5 @@
+from time import sleep
+
 from backend.Player import Player
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
@@ -88,7 +90,6 @@ class Game:
     def wall_tiling(self):
         for player in self.players:
             player.wall_tile()
-
     def end_of_phase(self):
         self.wall_tiling()
         for factory in self.factories:

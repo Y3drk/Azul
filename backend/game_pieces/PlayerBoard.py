@@ -11,7 +11,7 @@ class PlayerBoard:
         self.floor_line = [TilePlace() for _ in range(7)]
 
     def is_valid_place(self, row_id, color):
-        if self.current_pattern_lines_colors[row_id]!=color and\
+        if self.current_pattern_lines_colors[row_id] != color and \
                 self.current_pattern_lines_colors[row_id] != -1:
             return False
 
@@ -38,7 +38,7 @@ class PlayerBoard:
                 if picked_tiles_number == 0:
                     break
 
-        if picked_tiles_number>0:
+        if picked_tiles_number > 0:
             self.add_to_floor(color, picked_tiles_number)
 
         self.current_pattern_lines_colors[row_id] = color
@@ -54,15 +54,74 @@ class PlayerBoard:
                 else:
                     color = tile.current_color
 
-
             if finished_row:
-                for tile in self.wall[row]:
+                for i, tile in enumerate(self.wall[row]):
                     if tile.expected_color == color:
+                        points_row = 0
+                        for n in range(i - 1, -1, -1):
+                            if self.wall[row][n].current_color is not None:
+                                points_row += 1
+                            else:
+                                break
+                        for n in range(i + 1, 5):
+                            if self.wall[row][n].current_color is not None:
+                                points_row += 1
+                            else:
+                                break
+                        points_column = 0
+                        for n in range(row - 1, -1, -1):
+                            if self.wall[n][i].current_color is not None:
+                                points_column += 1
+                            else:
+                                break
+                        for n in range(row + 1, 5):
+                            if self.wall[n][i].current_color is not None:
+                                points_column += 1
+                            else:
+                                break
                         tile.current_color = color
-                        score += 5
+                        score += points_row + points_column + 1
                 self.tile_manager.discard([tile.current_color for tile in self.patter_lines[row]])
                 self.patter_lines[row] = [TilePlace() if row + j >= 4 else TilePlace(blocked=True) for j in range(5)]
+
+        for i, tile in enumerate(self.floor_line):
+            if tile.current_color is not None:
+                if i < 2:
+                    score -= 1
+                elif i < 5:
+                    score -= 2
+                else:
+                    score -= 3
+
+        self.tile_manager.discard([tile.current_color for tile in self.floor_line])
+        self.floor_line = [TilePlace() for _ in range(7)]
+
         return score
+
+    def calculate_final_score(self):
+        points_for_rows = 0
+        points_for_columns = 0
+        points_for_colors = 0
+        full_color_dict = {i: True for i in range(5)}
+        for i, row in enumerate(self.wall):
+            full_row = True
+            full_column = True
+            for j, tile in enumerate(row):
+                if self.wall[i][j].current_color is None:
+                    full_row = False
+                if self.wall[j][i].current_color is None:
+                    full_column = False
+                if self.wall[i][j].current_color is None:
+                    full_color_dict[self.wall[i][j].current_color] = False
+            if full_row:
+                points_for_rows += 5
+            if full_column:
+                points_for_columns += 7
+        for color, full_color in full_color_dict.items():
+            if full_color:
+                points_for_colors += 10
+        return points_for_rows+points_for_columns+points_for_colors
+
 
 
     def print(self):
