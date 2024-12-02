@@ -1,26 +1,41 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {Configuration} from "./components/Configuration";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import styled from "styled-components";
+import {Play} from "./components/Play";
+import {Summary} from "./components/Summary";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <BaseBody>
+                <Routes>
+                    <Route path="/" element={<Configuration />} />
+                    <Route path="game" element={<Play />} />
+                    <Route path="summary" element={<Summary />} />
+                    <Route path="*" element={<Summary />} />
+                </Routes>
+            </BaseBody>
+        </BrowserRouter>
+    );
 }
 
 export default App;
+
+const BaseBody = styled.div`
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: fit-content;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    
+    justify-content: center;
+    align-items: center;
+`;
