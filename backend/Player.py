@@ -2,18 +2,19 @@ from random import randint
 
 
 class Player:
-    def __init__(self, player_id, player_name, player_board, tile_manager, game):
+    def __init__(self, player_id, player_name, player_type, player_board, tile_manager, game):
         self.player_id = player_id
         self.player_name = player_name
+        self.player_type = player_type
         self.player_board = player_board
         self.tile_manager = tile_manager
         self.game = game
-        self.score = 0
+        self.score = {"base": 0, "horizontals": 0, "verticals": 0, "colors": 0}
 
     def __pick_items(self):
         def get_random():
             for _ in range(1000):
-                factory_id = randint(-1, len(self.game.factories)-1)
+                factory_id = randint(-1, len(self.game.factories) - 1)
                 color = randint(0, 4)
                 if self.game.is_valid_pick(factory_id, color):
                     return factory_id, color
@@ -52,17 +53,16 @@ class Player:
         # print(f"places to row {valid_row_id}")
         return picked_tiles_number
 
-    def do_move(self):
+    def do_move_random(self):
         picked_tiles_number, color = self.__pick_items()
         self.__put_items(picked_tiles_number, color)
 
     def wall_tile(self):
         score = self.player_board.wall_tile()
-        self.score += score
+        self.score["base"] += score
 
     def calculate_final_score(self):
-        score = self.player_board.calculate_final_score()
-        self.score += score
+        self.score["horizontals"], self.score["verticals"], self.score["colors"] = self.player_board.calculate_final_score()
         return self.score
 
     def has_finished(self):

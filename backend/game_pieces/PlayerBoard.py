@@ -10,6 +10,12 @@ class PlayerBoard:
         self.current_pattern_lines_colors = [-1 for _ in range(5)]
         self.floor_line = [TilePlace() for _ in range(7)]
 
+    def serialize(self):
+        wall = [[self.wall[i][j].current_color for j in range(5)] for i in range(5)]
+        patter_lines = [[self.patter_lines[i][j].current_color for j in range(5)] for i in range(5)]
+        floor_line = [self.floor_line[i].current_color for i in range(7)]
+        return {"wall": wall, "patter_lines": patter_lines, "floor_line": floor_line}
+
     def is_valid_place(self, row_id, color):
         if self.current_pattern_lines_colors[row_id] != color and \
                 self.current_pattern_lines_colors[row_id] != -1:
@@ -121,9 +127,7 @@ class PlayerBoard:
         for color, full_color in full_color_dict.items():
             if full_color:
                 points_for_colors += 10
-        return points_for_rows+points_for_columns+points_for_colors
-
-
+        return points_for_rows, points_for_columns, points_for_colors
 
     def print(self):
         for i in range(5):

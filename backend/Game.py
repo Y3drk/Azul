@@ -1,4 +1,4 @@
-from time import sleep
+import time
 
 from backend.Player import Player
 from backend.game_pieces.Factory import Factory
@@ -8,13 +8,11 @@ from backend.game_pieces.TileManager import TileManager
 
 class Game:
 
-    def __init__(self, players_names):
-        self.players_number = len(players_names)
-        assert 2 <= self.players_number <= 4
-
+    def __init__(self, players):
+        self.players_number = len(players.items())
         self.tile_manager = TileManager()
-        self.players = [Player(i, players_names[i], PlayerBoard(self.tile_manager), self.tile_manager, self) for i in
-                        range(self.players_number)]
+        self.players = [Player(i, player_name, player_type, PlayerBoard(self.tile_manager), self.tile_manager, self) for
+                        i, (player_name, player_type) in enumerate(players.items())]
         self.center = []
         self.factories = [Factory(i, self.tile_manager, self) for i in range(self.players_number * 2 + 1)]
 
@@ -39,6 +37,22 @@ class Game:
         if factory_id == -1:
             return self.pick_from_center(tile_color)
         return self.factories[factory_id].pick(tile_color)
+
+    def get_game_state(self):
+        current_state = {"center": self.center}
+        factories = {}
+        for f in self.factories:
+            factories[f.factory_id] = f.content
+        current_state["factories"] = factories
+        players = {}
+        for p in self.players:
+            player_info = {"player_name": p.player_name, "player_type": p.player_type,
+                           "player_board": p.player_board.serialize(),
+                           "score": p.score}
+            players[p.player_id] = player_info
+        current_state["players"] = players
+
+        return current_state
 
     def print(self):
         def print_factories():
@@ -93,17 +107,35 @@ class Game:
     def wall_tiling(self):
         for player in self.players:
             player.wall_tile()
+
     def end_of_phase(self):
         self.wall_tiling()
         for factory in self.factories:
             factory.refill()
         return self.end_of_game()
 
+    def needs_refill(self):
+        return len(self.center) + len([1 for factory in self.factories if len(factory.content) > 0]) == 0
+
+    def player_move(self, player_id, move):
+        if self.players[player_id].player_type == "bot":
+            self.players[player_id].do_move_random()
+        elif self.players[player_id].player_type == "human":
+            self.players[player_id].do_move_random() #TODO get from move
+        else:
+            raise Exception(f"Unknown player {player_id} type: {self.players[player_id].player_type}")
+
+        if self.needs_refill():
+            return self.end_of_phase()
+        return None
+
+
     def run(self, starting_player_id):
         active_player = starting_player_id
-        for number_of_rounds in range(10**6):
+        for number_of_rounds in range(10 ** 6):
+            time.sleep(4)
             # print(f"-  -  -  -  -  It is \"{self.players[active_player].player_name}\" move:")
-            self.players[active_player].do_move()
+            self.players[active_player].do_move_random()
             # self.print()
             active_player = (active_player + 1) % self.players_number
 
