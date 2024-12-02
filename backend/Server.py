@@ -22,16 +22,16 @@ class Server:
         self.game = None
         return {"message": "Game ended successfully", "current_state": result}, 200
 
-    def player_move(self, player_id, move):
+    def player_move(self, player_name, move):
         if self.game is None:
             return {"error": "Game not started yet!"}, 400
 
-        result = self.game.player_move(player_id, move)
+        result = self.game.player_move(player_name, move)
         if result is None:
-            return {"message": f"Player {player_id} moved successfully. Game is still on.",
+            return {"message": f"Player {player_name} moved successfully. Game is still on.",
                     "current_state": self.game.get_game_state()}, 200
         else:
-            return {"message": f"Player {player_id} moved successfully. Game has finished.",
+            return {"message": f"Player {player_name} moved successfully. Game has finished.",
                     "current_state": self.game.get_game_state()}, 211
 
 
@@ -64,13 +64,13 @@ def end_game():
 def make_move():
     data = request.json
 
-    if "player_id" not in data or "move" not in data:
+    if "player_name" not in data or "move" not in data:
         return jsonify({"error": "Invalid input. 'player_id' and 'move' are required."}), 400
 
-    player_id = data["player_id"]
+    player_name = data["player_name"]
     move = data["move"]
 
-    response = server.player_move(player_id, move)
+    response = server.player_move(player_name, move)
     return jsonify(response)
 
 

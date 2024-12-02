@@ -1,5 +1,3 @@
-import time
-
 from backend.Player import Player
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
@@ -11,8 +9,10 @@ class Game:
     def __init__(self, players):
         self.players_number = len(players.items())
         self.tile_manager = TileManager()
-        self.players = [Player(i, player_name, player_type, PlayerBoard(self.tile_manager), self.tile_manager, self) for
-                        i, (player_name, player_type) in enumerate(players.items())]
+        self.players = {
+            player_name: Player(i, player_name, player_type, PlayerBoard(self.tile_manager), self.tile_manager, self)
+            for
+            i, (player_name, player_type) in enumerate(players.items())}
         self.center = []
         self.factories = [Factory(i, self.tile_manager, self) for i in range(self.players_number * 2 + 1)]
 
@@ -44,12 +44,12 @@ class Game:
         for f in self.factories:
             factories[f.factory_id] = f.content
         current_state["factories"] = factories
-        players = {}
-        for p in self.players:
+        players = []
+        for p in self.players.values():
             player_info = {"player_name": p.player_name, "player_type": p.player_type,
                            "player_board": p.player_board.serialize(),
                            "score": p.score}
-            players[p.player_id] = player_info
+            players.append(player_info)
         current_state["players"] = players
 
         return current_state
@@ -77,7 +77,7 @@ class Game:
             print("=" * 80)
             print("Players:")
             print("=" * 80)
-            for player in self.players:
+            for player in self.players.values():
                 player.print()
                 print()
 
@@ -94,18 +94,18 @@ class Game:
 
     def final_scores(self):
         scores = {}
-        for player in self.players:
+        for player in self.players.values():
             scores[player.player_name] = player.calculate_final_score()
         return scores
 
     def end_of_game(self):
-        for player in self.players:
+        for player in self.players.values():
             if player.has_finished():
                 return self.final_scores()
         return None
 
     def wall_tiling(self):
-        for player in self.players:
+        for player in self.players.values():
             player.wall_tile()
 
     def end_of_phase(self):
@@ -117,32 +117,14 @@ class Game:
     def needs_refill(self):
         return len(self.center) + len([1 for factory in self.factories if len(factory.content) > 0]) == 0
 
-    def player_move(self, player_id, move):
-        if self.players[player_id].player_type == "bot":
-            self.players[player_id].do_move_random()
-        elif self.players[player_id].player_type == "human":
-            self.players[player_id].do_move_random() #TODO get from move
+    def player_move(self, player_name, move):
+        if self.players[player_name].player_type == "bot":
+            self.players[player_name].do_move_random()
+        elif self.players[player_name].player_type == "human":
+            self.players[player_name].do_move(move)
         else:
-            raise Exception(f"Unknown player {player_id} type: {self.players[player_id].player_type}")
+            raise Exception(f"Unknown player {player_name} type: {self.players[player_name].player_type}")
 
         if self.needs_refill():
             return self.end_of_phase()
         return None
-
-
-    def run(self, starting_player_id):
-        active_player = starting_player_id
-        for number_of_rounds in range(10 ** 6):
-            time.sleep(4)
-            # print(f"-  -  -  -  -  It is \"{self.players[active_player].player_name}\" move:")
-            self.players[active_player].do_move_random()
-            # self.print()
-            active_player = (active_player + 1) % self.players_number
-
-            self.turn_counter += 1
-
-            if len(self.center) + len([1 for factory in self.factories if len(factory.content) > 0]) == 0:
-                self.round_counter += 1
-                scores = self.end_of_phase()
-                if scores is not None:
-                    return scores, self.turn_counter, self.round_counter

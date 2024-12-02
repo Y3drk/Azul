@@ -20,16 +20,9 @@ class Player:
                     return factory_id, color
             raise Exception("Something is wrong, cant pick random items")
 
-            # for factory_id in range(-1, len(self.game.factories)):
-            #     for color in range(5):
-            #         if self.game.is_valid_pick(factory_id, color):
-            #             return factory_id, color
-
         valid_factory_id, valid_color = get_random()
         picked_tiles_number = self.game.pick(valid_factory_id, valid_color)
-        # print(
-        #     f"{self.player_name} picks {picked_tiles_number} tile of color {valid_color} from factory {valid_factory_id}",
-        #     end=" and ")
+
         return picked_tiles_number, valid_color
 
     def __put_items(self, picked_tiles_number, color):
@@ -43,26 +36,28 @@ class Player:
                 tries += 1
             return -1, color
 
-            # for row_id in range(5):
-            #     if self.player_board.is_valid_place(row_id, color):
-            #         return row_id, color
-            # return -1, color
-
         valid_row_id, valid_color = get_random()
         self.player_board.place(valid_row_id, valid_color, picked_tiles_number)
-        # print(f"places to row {valid_row_id}")
         return picked_tiles_number
 
     def do_move_random(self):
         picked_tiles_number, color = self.__pick_items()
         self.__put_items(picked_tiles_number, color)
 
+    def do_move(self, move):
+        factory_id = move["factory_id"]
+        color_id = move["color_id"]
+        pattern_line_row_id = move["pattern_line_row_id"]
+        picked_tiles_number = self.game.pick(factory_id, color_id)
+        self.player_board.place(pattern_line_row_id, color_id, picked_tiles_number)
+
     def wall_tile(self):
         score = self.player_board.wall_tile()
         self.score["base"] += score
 
     def calculate_final_score(self):
-        self.score["horizontals"], self.score["verticals"], self.score["colors"] = self.player_board.calculate_final_score()
+        self.score["horizontals"], self.score["verticals"], self.score[
+            "colors"] = self.player_board.calculate_final_score()
         return self.score
 
     def has_finished(self):
