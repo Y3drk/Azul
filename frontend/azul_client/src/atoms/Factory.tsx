@@ -1,15 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
+import {TILES_COLORS} from "../auxiliary/types";
 
-
-export enum TILES_COLORS {
-    RED = "red",
-    ORANGE = "orange",
-    BLUE = "blue",
-    BLACK = "black",
-    TURQUOISE = "turquoise",
-    WHITE="white",
-}
 
 export type TilesInfo = {
     amount: number;
@@ -69,12 +61,28 @@ export const Tile = styled(TilePlaceholder)<{ color: TILES_COLORS }>`
     color: ${(props) => props.color === TILES_COLORS.BLACK || props.color === TILES_COLORS.BLUE ? "white" : "black"};
 `;
 
-export const WallTile = styled(TilePlaceholder)<{color: TILES_COLORS, placed: boolean}>`
+export const WallTile = styled(TilePlaceholder)<{color: TILES_COLORS, placed: boolean, grid_row: number, grid_col: number}>`
     background-color: ${(props) => props.color};
-    opacity: ${(props) => props.placed ? 1.0 : 0.4};
+    opacity: ${(props) => props.placed ? 1.0 : 0.3};
+    grid-column: ${(props) => props.grid_col};
+    grid-row: ${(props) => props.grid_row};
+`;
+
+export const PatternLaneTile = styled(TilePlaceholder)<{color: TILES_COLORS, grid_row: number, grid_col: number}>`
+    background-color: ${(props) => props.color};
+    grid-column: ${(props) => props.grid_col};
+    grid-row: ${(props) => props.grid_row};
 `;
 
 export const FactoryID = styled.p`
     font-weight: bold;
     font-size: small;
+`;
+
+export const PatternLaneID = styled(FactoryID)<{grid_row: number, grid_col: number}>`
+    grid-column: ${(props) => props.grid_col};
+    grid-row: ${(props) => props.grid_row};
+    
+    position: relative;
+    top: -12px;
 `;

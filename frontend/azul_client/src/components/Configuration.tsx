@@ -3,18 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Name} from "../molecules/Name";
 import {ActionButton} from "../atoms/ActionButton";
 import styled from "styled-components";
-
-export type ConfigurationInfo = {
-    numberOfHumans: number;
-    numberOfBots: number;
-    playerNames: string[];
-};
-
-export const BASE_GAME_CONFIG: ConfigurationInfo = {
-    numberOfHumans: 1,
-    numberOfBots: 1,
-    playerNames: []
-}
+import {BASE_GAME_CONFIG} from "../auxiliary/constants";
 
 export const Configuration = () => {
     const navigate = useNavigate();
@@ -149,13 +138,16 @@ const Wrapper = styled.div`
     height: 50%;
 `;
 
-export const HorizontalWrapper = styled.div`
+export const HorizontalWrapper = styled.div<{display_gap?: number, specified_width?:number}>`
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 
     justify-content: center;
     align-items: center;
+    
+    gap: ${(props) => props.display_gap}%;
+    width: ${(props) => props.specified_width}%;
 `;
 
 const FormWrapper = styled.div`

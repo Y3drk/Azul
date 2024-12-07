@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActionButton} from "../atoms/ActionButton";
 import styled from "styled-components";
 import {InputForm} from "../components/Configuration";
-import {mockTiles} from "./Workshops";
+import {mockTiles} from "../auxiliary/constants";
 
 
 export const Move = () => {
@@ -57,6 +57,9 @@ const MoveContainer = styled.div`
     padding: 10px;
     
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
+    
+    height: 20%;
+    width: 30vw;
 `;

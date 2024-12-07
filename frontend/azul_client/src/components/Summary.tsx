@@ -4,8 +4,8 @@ import {ActionButton} from "../atoms/ActionButton";
 import {useNavigate} from "react-router-dom";
 import {HorizontalWrapper} from "./Configuration";
 import styled from "styled-components";
+import {SCORING_CATEGORIES} from "../auxiliary/constants";
 
-export const SCORING_CATEGORIES = ["points", "horizontal bonuses", "vertical bonuses", "color bonuses"];
 
 export const Summary = () => {
     const navigate = useNavigate();
