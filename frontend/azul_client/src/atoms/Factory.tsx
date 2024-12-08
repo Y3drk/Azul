@@ -15,7 +15,7 @@ export type FactoryInfo = {
 };
 
 export const Factory = (props: FactoryInfo) => {
-    return <FactoryTile>
+    return <FactoryTile id={`Factory${props.factoryId.toString()}`}>
         <FactoryID>ID:{props.factoryId}</FactoryID>
         {props.isEmpty ? <p>Empty</p> : props.tiles.map((tile, idx) => (
             <Tile container_border="none" color={tile.color} key={`Factory${props.factoryId}Tile${idx}`}><p>{tile.amount}</p></Tile>

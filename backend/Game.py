@@ -1,7 +1,7 @@
-from backend.Player import Player
-from backend.game_pieces.Factory import Factory
-from backend.game_pieces.PlayerBoard import PlayerBoard
-from backend.game_pieces.TileManager import TileManager
+from Player import Player
+from game_pieces.Factory import Factory
+from game_pieces.PlayerBoard import PlayerBoard
+from game_pieces.TileManager import TileManager
 
 
 class Game:

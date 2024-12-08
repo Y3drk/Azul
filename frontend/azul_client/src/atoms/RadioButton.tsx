@@ -19,7 +19,7 @@ export const RadioButton = (
     return (
         <Wrapper>
             <StyledInput type="radio" id={id} disabled={disabled} {...rest}/>
-            <StyledLabel htmlFor="radio-button">{label}</StyledLabel>
+            <StyledLabel htmlFor={id}>{label}</StyledLabel>
         </Wrapper>
     );
 };
