@@ -9,8 +9,8 @@ import {FLOOR_PENALTIES, WALL_COLORS} from "../auxiliary/constants";
 export const PlayerBoard = (props: PlayerBoardState) => {
     return <PlayerBoardContainer>
         <HorizontalWrapper display_gap={5} specified_width={100}>
-            <h3>Player name</h3>
-            <p>Points: X</p>
+            <h3>{props.playerName}</h3>
+            <p>Points: {props.currentPoints}</p>
         </HorizontalWrapper>
         <HorizontalWrapper>
             <PatternLanes>
@@ -46,7 +46,7 @@ export const PlayerBoard = (props: PlayerBoardState) => {
             {FLOOR_PENALTIES.map((penalty, idx) => {
                 if (props.floor.length > idx) {
                     return (
-                        <ColorfulTileBorder color="navy">
+                        <ColorfulTileBorder key={`FloorTile${idx}`} color="navy">
                             <p>{penalty}</p>
                             <Tile container_border="1px solid navy" color={props.floor[idx].color}/>
                         </ColorfulTileBorder>
@@ -54,7 +54,7 @@ export const PlayerBoard = (props: PlayerBoardState) => {
                 }
 
                 return (
-                    <ColorfulTileBorder color="navy">
+                    <ColorfulTileBorder key={`FloorPlaceholder${idx}`} color="navy">
                         <p>{penalty}</p>
                         <TilePlaceholder container_border="1px solid navy"/>
                     </ColorfulTileBorder>

@@ -34,3 +34,25 @@ export enum TILES_COLORS {
     WHITE="white",
     EMPTY="beige"
 }
+
+export type BackendPlayerState = {
+    player_name: string;
+    player_type: "human" | "bot";
+    score: {
+        base: number;
+        colors: number;
+        horizontals: number;
+        verticals: number;
+    };
+    player_board: {
+        floor_line: (null|number)[];
+        pattern_lines: (null|number)[][];
+        wall: (null|number)[][];
+    };
+};
+
+export type BackendGameState = {
+    center: number[];
+    factories: {[id: number]:number[]};
+    players: BackendPlayerState[];
+};
