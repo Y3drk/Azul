@@ -13,16 +13,33 @@ class Game:
             player_name: Player(i, player_name, player_type, PlayerBoard(self.tile_manager), self.tile_manager, self)
             for
             i, (player_name, player_type) in enumerate(players.items())}
-        self.center = []
+        self.center: list[int] = []
         self.factories = [Factory(i, self.tile_manager, self) for i in range(self.players_number * 2 + 1)]
 
         self.turn_counter = 0
         self.round_counter = 0
 
+    def possible_picks(self) -> list[dict]:
+        picks = []
+        for f in self.factories:
+            colors = [0 for _ in range(5)]
+            for t in f.content:
+                colors[t] += 1
+            for color, n in enumerate(colors):
+                if n > 0:
+                    picks.append({"color": color, "number": n, "from": f.factory_id})
+
+        colors = [0 for _ in range(5)]
+        for t in self.center:
+            colors[t] += 1
+        for color, n in enumerate(colors):
+            if n > 0:
+                picks.append({"color": color, "number": n, "from": -1})
+
+        return picks
+
     def pick_from_center(self, tile_color):
         picked_tiles_number = len([tile for tile in self.center if tile == tile_color])
-        # colors_discarded = [tile for tile in self.center if tile != tile_color]
-        # self.tile_manager.discard(colors_discarded)
         self.center = [tile for tile in self.center if tile != tile_color]
         return picked_tiles_number
 

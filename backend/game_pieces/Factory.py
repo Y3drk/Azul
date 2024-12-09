@@ -1,7 +1,7 @@
 class Factory:
     def __init__(self, factory_id, tile_manager, game):
         self.factory_id = factory_id
-        self.content = []
+        self.content: list[int] = []
         self.tile_manager = tile_manager
         self.game = game
 

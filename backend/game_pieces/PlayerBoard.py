@@ -25,6 +25,14 @@ class PlayerBoard:
             if tile.expected_color == color:
                 return tile.current_color is None
 
+    def possible_puts(self, color: int) -> list[int]:
+        result = [-1]
+        for row_id in range(5):
+            if self.is_valid_place(row_id, color):
+                result.append(row_id)
+
+        return result
+
     def add_to_floor(self, color, left_tiles_number):
         for tile in self.floor_line:
             if tile.current_color is None:
