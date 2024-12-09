@@ -1,4 +1,7 @@
 from backend.Player import Player
+from backend.RandomPlayer import RandomPlayer
+from backend.HumanPlayer import HumanPlayer
+from backend.MostTilesPlayer import MostTilesPlayer
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
 from backend.game_pieces.TileManager import TileManager
@@ -9,10 +12,22 @@ class Game:
     def __init__(self, players):
         self.players_number = len(players.items())
         self.tile_manager = TileManager()
-        self.players = {
-            player_name: Player(i, player_name, player_type, PlayerBoard(self.tile_manager), self.tile_manager, self)
-            for
-            i, (player_name, player_type) in enumerate(players.items())}
+        self.players = {}
+        for i, (player_name, player_type) in enumerate(players.items()):
+            if player_type == "human":
+                self.players[player_name] = HumanPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
+                                                        self.tile_manager, self)
+            elif player_type == "bot_random":
+                self.players[player_name] = RandomPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
+                                                         self.tile_manager, self)
+            elif player_type == "bot_most_tiles":
+                self.players[player_name] = MostTilesPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
+                                                            self.tile_manager, self)
+            elif player_type == "bot":
+                self.players[player_name] = Player(i, player_name, player_type, PlayerBoard(self.tile_manager),
+                                                   self.tile_manager, self)
+            else:
+                raise Exception(f"Invalid player type {player_type}")
         self.center: list[int] = []
         self.factories = [Factory(i, self.tile_manager, self) for i in range(self.players_number * 2 + 1)]
 
@@ -135,13 +150,22 @@ class Game:
         return len(self.center) + len([1 for factory in self.factories if len(factory.content) > 0]) == 0
 
     def player_move(self, player_name, move):
-        if self.players[player_name].player_type == "bot":
-            self.players[player_name].do_move_random()
-        elif self.players[player_name].player_type == "human":
-            self.players[player_name].do_move(move)
-        else:
-            raise Exception(f"Unknown player {player_name} type: {self.players[player_name].player_type}")
+        if player_name not in self.players.keys():
+            raise Exception("Unknown player")
+        self.players[player_name].do_move(move)
 
         if self.needs_refill():
             return self.end_of_phase()
+        return None
+
+    def simulate(self):
+        game_is_on = True
+        iterations = 0
+        players_names = [player_name for player_name in self.players.keys()]
+        while game_is_on:
+            active_player = self.players[players_names[iterations % len(players_names)]]
+            result = self.player_move(active_player.player_name, None)
+            iterations += 1
+            if result is not None:
+                return result, iterations
         return None
