@@ -18,14 +18,13 @@ class Server:
                 self.game = Game(players)
                 self.game.initial_setup()
                 result, iterations = self.game.simulate()
-
-                game_state = self.game.get_game_state()
+                winner = self.game.get_winner()
                 self.game = None
                 if result is None:
                     return {"message": "Some error during simulated game"}, 501
                 else:
-                    return {"message": f"Game has ended. It took {iterations} iterations",
-                            "current_state": game_state}, 211
+                    return {"message": f"Game has ended. It took {iterations} iterations. {winner.player_name} won as {winner.player_type}!",
+                            "current_state": result}, 211
         else:
             self.game = Game(players)
             self.game.initial_setup()

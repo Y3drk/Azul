@@ -158,6 +158,15 @@ class Game:
             return self.end_of_phase()
         return None
 
+    def get_winner(self):
+        high_score = 0
+        winner = None
+        for player in self.players.values():
+            if high_score<player.calculate_final_score_summed():
+                winner = player
+                high_score = player.calculate_final_score_summed()
+        return winner
+
     def simulate(self):
         game_is_on = True
         iterations = 0

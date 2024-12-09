@@ -24,6 +24,9 @@ class Player(ABC):
             "colors"] = self.player_board.calculate_final_score()
         return self.score
 
+    def calculate_final_score_summed(self):
+        return self.score["base"] + self.score["horizontals"] + self.score["verticals"] + self.score["colors"]
+
     def has_finished(self):
         for row in self.player_board.wall:
             if len([1 for tile in row if tile.current_color is not None]) == 5:
