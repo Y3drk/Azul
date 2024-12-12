@@ -25,7 +25,7 @@ class Factory:
 
     def print(self):
         print("               +---------------+")
-        if len(self.content)==0:
+        if len(self.content) == 0:
             print(f"Factory id {self.factory_id}:  |   -   -   -   |")
         else:
             floor_line_row_string = f"Factory id {self.factory_id}:  " + "| " + " | ".join(

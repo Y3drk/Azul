@@ -1,10 +1,11 @@
-from backend.Player import Player
-from backend.RandomPlayer import RandomPlayer
-from backend.HumanPlayer import HumanPlayer
-from backend.MostTilesPlayer import MostTilesPlayer
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
 from backend.game_pieces.TileManager import TileManager
+from backend.players.HumanPlayer import HumanPlayer
+from backend.players.LowestPenaltyPlayer import LowestPenaltyPlayer
+from backend.players.MostTilesPlayer import MostTilesPlayer
+from backend.players.RandomPlayer import RandomPlayer
+from backend.players.StupidHeuraPlayer import StupidHeuraPlayer
 
 
 class Game:
@@ -23,9 +24,17 @@ class Game:
             elif player_type == "bot_most_tiles":
                 self.players[player_name] = MostTilesPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
                                                             self.tile_manager, self)
+            elif player_type == "bot_lowest_penalty":
+                self.players[player_name] = LowestPenaltyPlayer(i, player_name, player_type,
+                                                                PlayerBoard(self.tile_manager),
+                                                                self.tile_manager, self)
+            elif player_type == "bot_stupid_heura":
+                self.players[player_name] = StupidHeuraPlayer(i, player_name, player_type,
+                                                              PlayerBoard(self.tile_manager),
+                                                              self.tile_manager, self)
             elif player_type == "bot":
-                self.players[player_name] = Player(i, player_name, player_type, PlayerBoard(self.tile_manager),
-                                                   self.tile_manager, self)
+                self.players[player_name] = RandomPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
+                                                         self.tile_manager, self)
             else:
                 raise Exception(f"Invalid player type {player_type}")
         self.center: list[int] = []
@@ -162,7 +171,7 @@ class Game:
         high_score = 0
         winner = None
         for player in self.players.values():
-            if high_score<player.calculate_final_score_summed():
+            if high_score < player.calculate_final_score_summed():
                 winner = player
                 high_score = player.calculate_final_score_summed()
         return winner

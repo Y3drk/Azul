@@ -19,12 +19,15 @@ class Server:
                 self.game.initial_setup()
                 result, iterations = self.game.simulate()
                 winner = self.game.get_winner()
+                game_state = self.game.get_game_state()
                 self.game = None
                 if result is None:
                     return {"message": "Some error during simulated game"}, 501
                 else:
-                    return {"message": f"Game has ended. It took {iterations} iterations. {winner.player_name} won as {winner.player_type}!",
-                            "current_state": result}, 211
+                    return {
+                        "message": f"Game has ended. It took {iterations} iterations. {winner.player_name} won as {winner.player_type}!",
+                        "winner": winner.player_name,
+                        "current_state": game_state}, 211
         else:
             self.game = Game(players)
             self.game.initial_setup()
@@ -85,7 +88,8 @@ def start_game():
         return jsonify({"error": "Number of players must be between 2 and 4."}), 400
 
     for player_type in players.values():
-        if player_type not in ["human", "bot", "bot_random", "bot_most_tiles"]:
+        if player_type not in ["human", "bot", "bot_random", "bot_most_tiles", "bot_lowest_penalty",
+                               "bot_stupid_heura"]:
             return jsonify({"error": f"Invalid type of player {player_type}"}), 400
 
     response = server.start_game(players)

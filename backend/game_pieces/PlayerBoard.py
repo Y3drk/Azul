@@ -33,6 +33,32 @@ class PlayerBoard:
 
         return result
 
+    def calc_move_penalty(self, row_id, color, number_of_tiles):
+        penalty = 0
+        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+            for place in self.patter_lines[row_id]:
+                if not place.blocked and place.current_color is None:
+                    number_of_tiles -= 1
+                if number_of_tiles == 0:
+                    return 0
+        for i, tile in enumerate(self.floor_line):
+            if tile.current_color is None and number_of_tiles > 0:
+                if i < 2:
+                    penalty += 1
+                elif i < 5:
+                    penalty += 2
+                else:
+                    penalty += 3
+            number_of_tiles -= 1
+        return penalty
+
+    def will_move_finish_row(self, row_id, color, number_of_tiles):
+        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+            for place in self.patter_lines[row_id]:
+                if not place.blocked and place.current_color is None:
+                    number_of_tiles -= 1
+        return 1 if number_of_tiles >= 0 else 0
+
     def add_to_floor(self, color, left_tiles_number):
         for tile in self.floor_line:
             if tile.current_color is None:
