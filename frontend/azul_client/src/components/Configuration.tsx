@@ -47,7 +47,6 @@ export const Configuration = () => {
             if (response[0] >= 300) {
                 alert(response[1].error);
             }
-            //TODO: parse initial game state and pass it with navigation
             navigate("../game", {
                 state: {
                     initial_game_state: parsed,

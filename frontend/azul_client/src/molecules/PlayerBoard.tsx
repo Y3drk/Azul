@@ -18,14 +18,14 @@ export const PlayerBoard = (props: PlayerBoardState) => {
                     const elems = new Array(lane.laneId + 1).fill(0);
                     return (
                         <>
-                            <PatternLaneID grid_row={lane.laneId+1} grid_col={1}>ID:{lane.laneId}</PatternLaneID>
+                            <PatternLaneID key={`PatternLane${props.playerName}${lane.laneId}`} grid_row={lane.laneId+1} grid_col={1}>ID:{lane.laneId}</PatternLaneID>
                             {elems.map((elem, idx) => {
                                 if (lane.tilesOnLane.amount > idx) {
-                                    return <PatternLaneTile color={lane.tilesOnLane.color} container_border="none"
+                                    return <PatternLaneTile key={`patternLaneTile${props.playerName}${idx}`} color={lane.tilesOnLane.color} container_border="none"
                                                             grid_row={lane.laneId + 1} grid_col={6 - idx}/>
                                 }
 
-                                return <PatternLaneTile color={TILES_COLORS.EMPTY} grid_row={lane.laneId + 1} grid_col={6 - idx} container_border="none"/>;
+                                return <PatternLaneTile key={`patternLaneTile${props.playerName}${idx}`} color={TILES_COLORS.EMPTY} grid_row={lane.laneId + 1} grid_col={6 - idx} container_border="none"/>;
                             })}
                         </>
                     );
@@ -35,7 +35,7 @@ export const PlayerBoard = (props: PlayerBoardState) => {
             <WallContainer>
                 {WALL_COLORS.map((row, rowIdx) => {
                     return row.map((elem, colIdx) => (
-                        <WallTile grid_col={colIdx + 1} grid_row={rowIdx + 1} color={elem}
+                        <WallTile key={`wallTile${props.playerName}${rowIdx}${colIdx}`} grid_col={colIdx + 1} grid_row={rowIdx + 1} color={elem}
                                   placed={props.wall[rowIdx][colIdx]} container_border="none"/>
                     ));
                 })}
@@ -48,7 +48,7 @@ export const PlayerBoard = (props: PlayerBoardState) => {
                     return (
                         <ColorfulTileBorder key={`FloorTile${idx}`} color="navy">
                             <p>{penalty}</p>
-                            <Tile container_border="1px solid navy" color={props.floor[idx].color}/>
+                            <Tile key={`FloorTile${props.playerName}${idx}`} container_border="1px solid navy" color={props.floor[idx].color}/>
                         </ColorfulTileBorder>
                     );
                 }

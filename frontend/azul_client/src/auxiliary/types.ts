@@ -56,3 +56,13 @@ export type BackendGameState = {
     factories: {[id: number]:number[]};
     players: BackendPlayerState[];
 };
+
+
+export type BackendMove = {
+    "player_name": string,
+    "move": {
+        "factory_id": number,
+        "color_id": number,
+        "pattern_line_row_id": number
+    }
+}

@@ -11,7 +11,7 @@ export const Workshops = (props: WorkshopInfo) => {
     return <Workshop>
         {props.factories.map((factory) => <Factory key={`Factory${factory.factoryId}`} {...factory}/>)}
         <Market>
-            <FactoryID>ID:9</FactoryID>
+            <FactoryID>ID:{props.factories.length}</FactoryID>
             {props.marketTiles.map((tile) => (
             <Tile key={`marketTile${tile.color}`} container_border="none" color={tile.color}><p>{tile.amount}</p></Tile>
         ))}

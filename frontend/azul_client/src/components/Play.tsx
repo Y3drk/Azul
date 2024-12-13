@@ -5,18 +5,20 @@ import styled from "styled-components";
 import {Move} from "../molecules/Move";
 import {PlayerBoard} from "../molecules/PlayerBoard";
 import {HorizontalWrapper} from "./Configuration";
-import {mockPlayState} from "../auxiliary/constants";
 import {ActionButton} from "../atoms/ActionButton";
 import {useLocation, useNavigate} from "react-router-dom";
-import {GameState} from "../auxiliary/types";
+import {BackendGameState, BackendMove, GameState, PlayerBoardState, TILES_COLORS} from "../auxiliary/types";
+import {Color2Number, parseBackendGameState} from "../auxiliary/functions";
 
 
-//TODO: move needs onClick function that will fetch "make_move" API
 export const Play = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
     const [currentGameState, setCurrentGameState] = useState<GameState>(location.state.initial_game_state);
+    const [currentPlayer, setCurrentPlayer] = useState(0);
+
+    const players = location.state.initial_game_state.playerBoardsState.map((boardState: PlayerBoardState) => boardState.playerName);
 
     const quitGame = () => {
             async function endGameRequest() {
@@ -35,6 +37,43 @@ export const Play = () => {
         })
     };
 
+    const makeMove = (workshop: number, color: string, patternLane: number) => {
+        async function makeMoveRequest() {
+            const move: BackendMove = {
+              player_name: players[currentPlayer],
+              move: {
+                  factory_id: workshop,
+                  color_id: Color2Number(color as TILES_COLORS),
+                  pattern_line_row_id: patternLane
+              }
+            };
+
+            const response = await fetch("http://127.0.0.1:5000/make_move", {
+                method: "POST",
+                body: JSON.stringify(move),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const data = await response.json();
+            return [response.status, data];
+        }
+
+        makeMoveRequest().then((response) => {
+            if (response[0] >= 300) {
+                alert(response[1].error);
+            }
+            else if (response[0] === 211){
+                navigate("../summary");
+            }
+
+            const newGameState: BackendGameState = response[1][0].current_state;
+            setCurrentGameState(parseBackendGameState(newGameState));
+            setCurrentPlayer((prev) => (prev+1)%players.length);
+
+        });
+    };
+
     return <Board>
         <Name padding_top={0} left_position={42}/>
         <InnerBoard>
@@ -47,13 +86,13 @@ export const Play = () => {
             </PlayerSide>
             <div>
                 <HorizontalWrapper>
-                    <h3>Player 1 turn</h3>
+                    <h3>{players[currentPlayer]}'s turn</h3>
                     <ActionButton text="Quit Game" color="red" onClick={quitGame} isDisabled={false} type="button" />
                 </HorizontalWrapper>
                 <Workshops {...currentGameState.workshopState} />
             </div>
             <PlayerSide>
-                <Move />
+                <Move currentGameState={currentGameState} currentPlayer={players[currentPlayer]} onMove={makeMove}/>
                 {currentGameState.playerBoardsState.map((player, idx) => {
                     if (idx >= 2) {
                         return <PlayerBoard {...player}/>

@@ -63,7 +63,7 @@ export const Tile = styled(TilePlaceholder)<{ color: TILES_COLORS }>`
 
 export const WallTile = styled(TilePlaceholder)<{color: TILES_COLORS, placed: boolean, grid_row: number, grid_col: number}>`
     background-color: ${(props) => props.color};
-    opacity: ${(props) => props.placed ? 1.0 : 0.3};
+    opacity: ${(props) => props.placed ? 1.0 : 0.15};
     grid-column: ${(props) => props.grid_col};
     grid-row: ${(props) => props.grid_row};
 `;

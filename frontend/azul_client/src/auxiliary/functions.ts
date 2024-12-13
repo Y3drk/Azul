@@ -76,3 +76,13 @@ export const parseBackendGameState = (beGameState: BackendGameState): GameState 
             }))
     };
 }
+
+
+export const Color2Number = (color: TILES_COLORS): number => {
+    for (let idx = 0; idx < 6; idx++){
+        if (NUMBER2COLOR[idx] === color){
+            return idx;
+        }
+    }
+    return -1;
+}
