@@ -60,14 +60,18 @@ export const Play = () => {
         }
 
         makeMoveRequest().then((response) => {
+            const newGameState: BackendGameState = response[1][0].current_state;
+
             if (response[0] >= 300) {
                 alert(response[1].error);
             }
             else if (response[0] === 211){
-                navigate("../summary");
+                navigate("../summary", {
+                    state: {
+                        finalGameState: newGameState
+                }});
             }
 
-            const newGameState: BackendGameState = response[1][0].current_state;
             setCurrentGameState(parseBackendGameState(newGameState));
             setCurrentPlayer((prev) => (prev+1)%players.length);
 

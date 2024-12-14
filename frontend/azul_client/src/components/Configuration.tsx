@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Name} from "../molecules/Name";
 import {ActionButton} from "../atoms/ActionButton";
 import styled from "styled-components";
-import {BASE_GAME_CONFIG, mockPlayState} from "../auxiliary/constants";
+import {BASE_GAME_CONFIG} from "../auxiliary/constants";
 import {allElementsAreUnique, parseBackendGameState} from "../auxiliary/functions";
 import {BackendGameState} from "../auxiliary/types";
 
@@ -41,9 +41,8 @@ export const Configuration = () => {
 
         startGameRequest().then((response) => {
             const initialGameState: BackendGameState = response[1][0].current_state;
-            console.log(initialGameState);
             const parsed = parseBackendGameState(initialGameState);
-            console.log(parsed);
+
             if (response[0] >= 300) {
                 alert(response[1].error);
             }
