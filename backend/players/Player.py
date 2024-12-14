@@ -33,6 +33,18 @@ class Player(ABC):
                 return True
         return False
 
+    def possible_moves(self) -> list[dict]:
+        possible_moves = []
+        possible_picks = self.game.possible_picks()
+        for possible_pick in possible_picks:
+            move = dict(possible_pick)
+            possible_puts = self.player_board.possible_puts(move["color"])
+            for possible_put in possible_puts:
+                full_move = dict(move)
+                full_move["to"] = possible_put
+                possible_moves.append(full_move)
+        return possible_moves
+
     def print(self):
         print(f"Player {self.player_name} board:")
         self.player_board.print()

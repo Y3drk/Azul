@@ -133,11 +133,13 @@ def contest(N, bot_names, bot_types):
         bots_scores_winning[bot_name] = []
         bots_scores_losing[bot_name] = []
 
+    avg_iterations = 0
     for i in tqdm(range(N)):
         response, code = server.start_game(bots, True)
-        message, winner, current_state = response["message"], response["winner"], response["current_state"]
+        message, winner, current_state, iterations = (response["message"], response["winner"],
+                                                      response["current_state"], response["iterations"])
         bots_wins[winner] += 1
-
+        avg_iterations += iterations
         assert code == 211
         # print(code)
         # print(message)
@@ -162,29 +164,30 @@ def contest(N, bot_names, bot_types):
     # print(bots_wins)
     # print(bots_scores_winning)
     # print(bots_scores_losing)
+    print(f"Average iteration number: {round(avg_iterations/N,4)}")
     return bots, bots_wins, bots_scores_winning, bots_scores_losing
 
 
-# N = 0
+# N = 1000
 #
 # bot_names = ["Alice", "Bob", "Carol", "Diana"]
-# bot_types = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_random"]
-# bot_names = ["Alice", "Bob"]
-# bot_types = ["bot_random", "bot_lowest_penalty"]
+# bot_types = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_dynamic_reward"]
+# # bot_names = ["Alice", "Bob"]
+# # bot_types = ["bot_lowest_penalty", "bot_dynamic_reward"]
 #
 # bots, bots_wins, bots_scores_winning, bots_scores_losing = contest(N, bot_names, bot_types)
-# show_table(bots_scores_winning, bots_scores_losing)
+# # show_table(bots_scores_winning, bots_scores_losing)
 # draw_plots(bots_scores_winning, bots_scores_losing)
 
 
-bot_names_all = ['Bot1', 'Bot2', 'Bot3', 'Bot4']
-bot_types_all = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura"]
+bot_names_all = ['Bot1', 'Bot2', 'Bot3', 'Bot4', 'Bot5']
+bot_types_all = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura", "bot_dynamic_reward"]
 game_results = pd.DataFrame(index=bot_types_all, columns=bot_types_all)
 
 N = 1000
 for i, row_bot in enumerate(bot_types_all):
     for j, col_bot in enumerate(bot_types_all):
-        if i >= j:
+        if i > j:
             bot_names = [bot_names_all[i] + "0", bot_names_all[j] + "1"]
             bot_types = [bot_types_all[i], bot_types_all[j]]
 

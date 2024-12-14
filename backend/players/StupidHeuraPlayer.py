@@ -8,14 +8,7 @@ class StupidHeuraPlayer(Player):
         super().__init__(player_id, player_name, player_type, player_board, tile_manager, game)
 
     def do_move(self, move):
-        possible_moves = []
-        possible_picks = self.game.possible_picks()
-        for possible_pick in possible_picks:
-            move = dict(possible_pick)
-            possible_puts = self.player_board.possible_puts(move["color"])
-            for possible_put in possible_puts:
-                move["to"] = possible_put
-            possible_moves.append(move)
+        possible_moves = self.possible_moves()
 
         for possible_move in possible_moves:
             possible_move["penalty"] = self.player_board.calc_move_penalty(possible_move["to"], possible_move["color"],

@@ -3,6 +3,8 @@ from backend.game_pieces.PlayerBoard import PlayerBoard
 from backend.game_pieces.TileManager import TileManager
 from backend.players.HumanPlayer import HumanPlayer
 from backend.players.LowestPenaltyPlayer import LowestPenaltyPlayer
+from backend.players.QPlayer import QPlayer
+from backend.players.DynamicRewardPlayer import DynamicRewardPlayer
 from backend.players.MostTilesPlayer import MostTilesPlayer
 from backend.players.RandomPlayer import RandomPlayer
 from backend.players.StupidHeuraPlayer import StupidHeuraPlayer
@@ -30,6 +32,14 @@ class Game:
                                                                 self.tile_manager, self)
             elif player_type == "bot_stupid_heura":
                 self.players[player_name] = StupidHeuraPlayer(i, player_name, player_type,
+                                                              PlayerBoard(self.tile_manager),
+                                                              self.tile_manager, self)
+            elif player_type == "bot_q":
+                self.players[player_name] = QPlayer(i, player_name, player_type,
+                                                              PlayerBoard(self.tile_manager),
+                                                              self.tile_manager, self)
+            elif player_type == "bot_dynamic_reward":
+                self.players[player_name] = DynamicRewardPlayer(i, player_name, player_type,
                                                               PlayerBoard(self.tile_manager),
                                                               self.tile_manager, self)
             elif player_type == "bot":
@@ -79,7 +89,7 @@ class Game:
             return self.pick_from_center(tile_color)
         return self.factories[factory_id].pick(tile_color)
 
-    def get_game_state(self):
+    def get_game_state(self) -> dict:
         current_state = {"center": self.center}
         factories = {}
         for f in self.factories:
@@ -161,11 +171,11 @@ class Game:
     def player_move(self, player_name, move):
         if player_name not in self.players.keys():
             raise Exception("Unknown player")
-        self.players[player_name].do_move(move)
+        result = self.players[player_name].do_move(move)
 
         if self.needs_refill():
             return self.end_of_phase()
-        return None
+        return result
 
     def get_winner(self):
         high_score = 0
@@ -185,5 +195,5 @@ class Game:
             result = self.player_move(active_player.player_name, None)
             iterations += 1
             if result is not None:
-                return result, iterations
+                return result, iterations//len(players_names)
         return None

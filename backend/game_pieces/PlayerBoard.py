@@ -5,16 +5,16 @@ class PlayerBoard:
     def __init__(self, tile_manager):
         self.tile_manager = tile_manager
         self.wall = [[TilePlace(expected_color=(j - i) % 5) for j in range(5)] for i in range(5)]
-        self.patter_lines = [[TilePlace() if i + j >= 4 else TilePlace(blocked=True) for j in range(5)] for i in
-                             range(5)]
+        self.pattern_lines = [[TilePlace() if i + j >= 4 else TilePlace(blocked=True) for j in range(5)] for i in
+                              range(5)]
         self.current_pattern_lines_colors = [-1 for _ in range(5)]
         self.floor_line = [TilePlace() for _ in range(7)]
 
     def serialize(self):
         wall = [[self.wall[i][j].current_color for j in range(5)] for i in range(5)]
-        patter_lines = [[self.patter_lines[i][j].current_color for j in range(5)] for i in range(5)]
+        pattern_lines = [[self.pattern_lines[i][j].current_color for j in range(5)] for i in range(5)]
         floor_line = [self.floor_line[i].current_color for i in range(7)]
-        return {"wall": wall, "patter_lines": patter_lines, "floor_line": floor_line}
+        return {"wall": wall, "pattern_lines": pattern_lines, "floor_line": floor_line}
 
     def is_valid_place(self, row_id, color):
         if self.current_pattern_lines_colors[row_id] != color and \
@@ -33,10 +33,46 @@ class PlayerBoard:
 
         return result
 
+    def calc_reward(self, row_id, color, number_of_tiles):
+        if row_id == -1:
+            return 0
+        filled_row_part = (number_of_tiles + sum(
+            [1 if tile.current_color is not None else 0 for tile in self.pattern_lines[row_id]]
+        )) / (row_id + 1)
+        column_id = (row_id + color) % 5
+
+        expected_points_row = 0
+        for n in range(column_id - 1, -1, -1):
+            if self.wall[row_id][n].current_color is not None:
+                expected_points_row += 1
+            else:
+                break
+        for n in range(column_id + 1, 5):
+            if self.wall[row_id][n].current_color is not None:
+                expected_points_row += 1
+            else:
+                break
+
+        expected_points_column = 0
+        for n in range(row_id - 1, -1, -1):
+            if self.wall[n][column_id].current_color is not None:
+                expected_points_column += 1
+            else:
+                break
+        for n in range(row_id + 1, 5):
+            if self.wall[n][column_id].current_color is not None:
+                expected_points_column += 1
+            else:
+                break
+        short_term_score = expected_points_row + expected_points_column + 1
+        if expected_points_row > 0 and expected_points_column > 0:
+            short_term_score += 1
+        return short_term_score * filled_row_part
+
     def calc_move_penalty(self, row_id, color, number_of_tiles):
         penalty = 0
         if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
-            for place in self.patter_lines[row_id]:
+            for place in self.pattern_lines[row_id]:
                 if not place.blocked and place.current_color is None:
                     number_of_tiles -= 1
                 if number_of_tiles == 0:
@@ -54,7 +90,7 @@ class PlayerBoard:
 
     def will_move_finish_row(self, row_id, color, number_of_tiles):
         if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
-            for place in self.patter_lines[row_id]:
+            for place in self.pattern_lines[row_id]:
                 if not place.blocked and place.current_color is None:
                     number_of_tiles -= 1
         return 1 if number_of_tiles >= 0 else 0
@@ -71,7 +107,7 @@ class PlayerBoard:
 
     def place(self, row_id, color, picked_tiles_number):
         if row_id != -1:
-            for tile in self.patter_lines[row_id]:
+            for tile in self.pattern_lines[row_id]:
                 if not tile.blocked and tile.current_color is None:
                     tile.current_color = color
                     picked_tiles_number -= 1
@@ -88,7 +124,7 @@ class PlayerBoard:
         for row in range(5):
             finished_row = True
             color = None
-            for tile in self.patter_lines[row]:
+            for tile in self.pattern_lines[row]:
                 if not tile.blocked and tile.current_color is None:
                     finished_row = False
                 else:
@@ -121,8 +157,10 @@ class PlayerBoard:
                                 break
                         tile.current_color = color
                         score += points_row + points_column + 1
-                self.tile_manager.discard([tile.current_color for tile in self.patter_lines[row]])
-                self.patter_lines[row] = [TilePlace() if row + j >= 4 else TilePlace(blocked=True) for j in range(5)]
+                        if points_row > 0 and points_column > 0:
+                            score += 1
+                self.tile_manager.discard([tile.current_color for tile in self.pattern_lines[row]])
+                self.pattern_lines[row] = [TilePlace() if row + j >= 4 else TilePlace(blocked=True) for j in range(5)]
 
         for i, tile in enumerate(self.floor_line):
             if tile.current_color is not None:
@@ -167,7 +205,7 @@ class PlayerBoard:
         for i in range(5):
             print("+---+---+---+---+---+    +---+---+---+---+---+")
             patter_line_row_string = "| " + " | ".join(
-                f"{str(item)}" for item in self.patter_lines[i]) + " |"
+                f"{str(item)}" for item in self.pattern_lines[i]) + " |"
             print(patter_line_row_string, end="    ")
 
             wall_row_string = "| " + " | ".join(
