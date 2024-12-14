@@ -1,13 +1,7 @@
+from backend.Player import Player
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
 from backend.game_pieces.TileManager import TileManager
-from backend.players.HumanPlayer import HumanPlayer
-from backend.players.LowestPenaltyPlayer import LowestPenaltyPlayer
-from backend.players.QPlayer import QPlayer
-from backend.players.DynamicRewardPlayer import DynamicRewardPlayer
-from backend.players.MostTilesPlayer import MostTilesPlayer
-from backend.players.RandomPlayer import RandomPlayer
-from backend.players.StupidHeuraPlayer import StupidHeuraPlayer
 
 
 class Game:
