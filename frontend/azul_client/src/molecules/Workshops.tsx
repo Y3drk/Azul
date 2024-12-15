@@ -1,20 +1,19 @@
 import React from 'react';
 import {Factory, FactoryID, FactoryInfo, Tile, TilesInfo} from "../atoms/Factory";
 import styled from "styled-components";
-import {mockTiles} from "../auxiliary/constants";
 
 export type WorkshopInfo = {
   marketTiles: TilesInfo[];
   factories: FactoryInfo[];
 };
 
-export const Workshops = () => {
+export const Workshops = (props: WorkshopInfo) => {
     return <Workshop>
-        {mockTiles.factories.map((factory) => <Factory factoryId={factory.factoryId} isEmpty={factory.isEmpty} tiles={factory.tiles}/>)}
+        {props.factories.map((factory) => <Factory key={`Factory${factory.factoryId}`} {...factory}/>)}
         <Market>
-            <FactoryID>ID:9</FactoryID>
-            {mockTiles.marketTiles.map((tile) => (
-            <Tile container_border="none" color={tile.color}><p>{tile.amount}</p></Tile>
+            <FactoryID>ID:{props.factories.length}</FactoryID>
+            {props.marketTiles.map((tile) => (
+            <Tile key={`marketTile${tile.color}`} container_border="none" color={tile.color}><p>{tile.amount}</p></Tile>
         ))}
         </Market>
     </Workshop>

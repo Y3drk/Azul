@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
-from backend.Game import Game
+from Game import Game
 
 
 class Server:
@@ -36,6 +37,7 @@ class Server:
 
 
 app = Flask(__name__)
+CORS(app)
 server = Server()
 
 
