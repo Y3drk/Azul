@@ -1,3 +1,5 @@
+from time import sleep
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -37,21 +39,34 @@ class Server:
     def end_game(self):
         if self.game is None:
             return {"message": "Game not started yet!"}, 400
-        result = self.game.get_game_state()
+        game_state = self.game.get_game_state()
         self.game = None
-        return {"message": "Game ended successfully", "current_state": result}, 200
+        return {"message": "Game ended successfully", "current_state": game_state}, 200
 
     def player_move(self, player_name, move):
         if self.game is None:
             return {"error": "Game not started yet!"}, 400
 
         result = self.game.player_move(player_name, move)
+        # print(result)
+        # if result is not None:
+        #     print("Ha!")
+        #     sleep(10)
+        #     print(result)
+        #     return {"message": f"Player {player_name} moved successfully. Game has finished.",
+        #             "current_state": self.game.get_game_state()}, 211
         if result is None:
+            # print("res", result)
             return {"message": f"Player {player_name} moved successfully. Game is still on.",
                     "current_state": self.game.get_game_state()}, 200
         else:
+            # print("Ha!")
+            # sleep(10)
+            # print("res", result)
+            game_state = self.game.get_game_state()
+            self.game = None
             return {"message": f"Player {player_name} moved successfully. Game has finished.",
-                    "current_state": self.game.get_game_state()}, 211
+                    "current_state":game_state}, 211
 
 
 app = Flask(__name__)
@@ -71,12 +86,12 @@ def simulate_game():
         return jsonify({"error": "Number of players must be between 2 and 4."}), 400
 
     for player_type in players.values():
-        if player_type not in ["human", "bot", "bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura",
-                               "bot_q", "bot_dynamic_reward"]:
+        if player_type not in ["human", "bot", "bot_random", "bot_most_tiles", "bot_lowest_penalty",
+                               "bot_stupid_heura", "bot_q", "bot_dynamic_reward"]:
             return jsonify({"error": f"Invalid type of player {player_type}"}), 400
 
     response = server.start_game(players, True)
-    return jsonify(response)
+    return jsonify(response), response[1]
 
 
 @app.route('/start_game', methods=['POST'])
@@ -92,17 +107,17 @@ def start_game():
 
     for player_type in players.values():
         if player_type not in ["human", "bot", "bot_random", "bot_most_tiles", "bot_lowest_penalty",
-                               "bot_stupid_heura", "bot_q"]:
+                               "bot_stupid_heura", "bot_q", "bot_dynamic_reward"]:
             return jsonify({"error": f"Invalid type of player {player_type}"}), 400
 
     response = server.start_game(players)
-    return jsonify(response)
+    return jsonify(response), response[1]
 
 
 @app.route('/end_game', methods=['GET'])
 def end_game():
     response = server.end_game()
-    return jsonify(response)
+    return jsonify(response), response[1]
 
 
 @app.route('/make_move', methods=['POST'])
@@ -116,7 +131,7 @@ def make_move():
     move = data["move"]
 
     response = server.player_move(player_name, move)
-    return jsonify(response)
+    return jsonify(response), response[1]
 
 
 if __name__ == "__main__":

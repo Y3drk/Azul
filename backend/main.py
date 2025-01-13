@@ -184,7 +184,7 @@ bot_names_all = ['Bot1', 'Bot2', 'Bot3', 'Bot4', 'Bot5']
 bot_types_all = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura", "bot_dynamic_reward"]
 game_results = pd.DataFrame(index=bot_types_all, columns=bot_types_all)
 
-N = 1000
+N = 10
 for i, row_bot in enumerate(bot_types_all):
     for j, col_bot in enumerate(bot_types_all):
         if i > j:

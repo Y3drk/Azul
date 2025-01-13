@@ -1,7 +1,14 @@
-from backend.Player import Player
+# from backend.Player import Player
 from backend.game_pieces.Factory import Factory
 from backend.game_pieces.PlayerBoard import PlayerBoard
 from backend.game_pieces.TileManager import TileManager
+from backend.players.HumanPlayer import HumanPlayer
+from backend.players.RandomPlayer import RandomPlayer
+from backend.players.MostTilesPlayer import MostTilesPlayer
+from backend.players.LowestPenaltyPlayer import LowestPenaltyPlayer
+from backend.players.StupidHeuraPlayer import StupidHeuraPlayer
+from backend.players.QPlayer import QPlayer
+from backend.players.DynamicRewardPlayer import DynamicRewardPlayer
 
 
 class Game:
@@ -146,6 +153,7 @@ class Game:
     def end_of_game(self):
         for player in self.players.values():
             if player.has_finished():
+                # print(self.final_scores())
                 return self.final_scores()
         return None
 
@@ -165,11 +173,11 @@ class Game:
     def player_move(self, player_name, move):
         if player_name not in self.players.keys():
             raise Exception("Unknown player")
-        result = self.players[player_name].do_move(move)
+        self.players[player_name].do_move(move)
 
         if self.needs_refill():
             return self.end_of_phase()
-        return result
+        return None
 
     def get_winner(self):
         high_score = 0

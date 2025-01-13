@@ -22,3 +22,4 @@ class DynamicRewardPlayer(Player):
         picked_tiles_number = self.game.pick(random_move["from"], random_move["color"])
         assert picked_tiles_number == random_move["number"]
         self.player_board.place(random_move["to"], random_move["color"], random_move["number"])
+        # print("moved")
