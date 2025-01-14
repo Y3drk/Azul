@@ -1,4 +1,4 @@
-from game_pieces.TilePlace import TilePlace
+from backend.game_pieces.TilePlace import TilePlace
 
 
 class PlayerBoard:
@@ -12,9 +12,9 @@ class PlayerBoard:
 
     def serialize(self):
         wall = [[self.wall[i][j].current_color for j in range(5)] for i in range(5)]
-        patter_lines = [[self.pattern_lines[i][j].current_color for j in range(5)] for i in range(5)]
+        pattern_lines = [[self.pattern_lines[i][j].current_color for j in range(5)] for i in range(5)]
         floor_line = [self.floor_line[i].current_color for i in range(7)]
-        return {"wall": wall, "pattern_lines": patter_lines, "floor_line": floor_line}
+        return {"wall": wall, "pattern_lines": pattern_lines, "floor_line": floor_line}
 
     def is_valid_place(self, row_id, color):
         if self.current_pattern_lines_colors[row_id] != color and \
@@ -24,6 +24,76 @@ class PlayerBoard:
         for tile in self.wall[row_id]:
             if tile.expected_color == color:
                 return tile.current_color is None
+
+    def possible_puts(self, color: int) -> list[int]:
+        result = [-1]
+        for row_id in range(5):
+            if self.is_valid_place(row_id, color):
+                result.append(row_id)
+
+        return result
+
+    def calc_reward(self, row_id, color, number_of_tiles):
+        if row_id == -1:
+            return 0
+        filled_row_part = (number_of_tiles + sum(
+            [1 if tile.current_color is not None else 0 for tile in self.pattern_lines[row_id]]
+        )) / (row_id + 1)
+        column_id = (row_id + color) % 5
+
+        expected_points_row = 0
+        for n in range(column_id - 1, -1, -1):
+            if self.wall[row_id][n].current_color is not None:
+                expected_points_row += 1
+            else:
+                break
+        for n in range(column_id + 1, 5):
+            if self.wall[row_id][n].current_color is not None:
+                expected_points_row += 1
+            else:
+                break
+
+        expected_points_column = 0
+        for n in range(row_id - 1, -1, -1):
+            if self.wall[n][column_id].current_color is not None:
+                expected_points_column += 1
+            else:
+                break
+        for n in range(row_id + 1, 5):
+            if self.wall[n][column_id].current_color is not None:
+                expected_points_column += 1
+            else:
+                break
+        short_term_score = expected_points_row + expected_points_column + 1
+        if expected_points_row > 0 and expected_points_column > 0:
+            short_term_score += 1
+        return short_term_score * filled_row_part
+
+    def calc_move_penalty(self, row_id, color, number_of_tiles):
+        penalty = 0
+        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+            for place in self.pattern_lines[row_id]:
+                if not place.blocked and place.current_color is None:
+                    number_of_tiles -= 1
+                if number_of_tiles == 0:
+                    return 0
+        for i, tile in enumerate(self.floor_line):
+            if tile.current_color is None and number_of_tiles > 0:
+                if i < 2:
+                    penalty += 1
+                elif i < 5:
+                    penalty += 2
+                else:
+                    penalty += 3
+            number_of_tiles -= 1
+        return penalty
+
+    def will_move_finish_row(self, row_id, color, number_of_tiles):
+        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+            for place in self.pattern_lines[row_id]:
+                if not place.blocked and place.current_color is None:
+                    number_of_tiles -= 1
+        return 1 if number_of_tiles >= 0 else 0
 
     def add_to_floor(self, color, left_tiles_number):
         for tile in self.floor_line:
@@ -87,6 +157,8 @@ class PlayerBoard:
                                 break
                         tile.current_color = color
                         score += points_row + points_column + 1
+                        if points_row > 0 and points_column > 0:
+                            score += 1
                 self.tile_manager.discard([tile.current_color for tile in self.pattern_lines[row]])
                 self.pattern_lines[row] = [TilePlace() if row + j >= 4 else TilePlace(blocked=True) for j in range(5)]
 

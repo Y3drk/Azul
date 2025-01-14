@@ -1,7 +1,7 @@
 class Factory:
     def __init__(self, factory_id, tile_manager, game):
         self.factory_id = factory_id
-        self.content = []
+        self.content: list[int] = []
         self.tile_manager = tile_manager
         self.game = game
 
@@ -25,7 +25,7 @@ class Factory:
 
     def print(self):
         print("               +---------------+")
-        if len(self.content)==0:
+        if len(self.content) == 0:
             print(f"Factory id {self.factory_id}:  |   -   -   -   |")
         else:
             floor_line_row_string = f"Factory id {self.factory_id}:  " + "| " + " | ".join(
