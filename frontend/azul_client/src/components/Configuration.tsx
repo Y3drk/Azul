@@ -11,6 +11,7 @@ import {BackendGameState} from "../auxiliary/types";
 export const Configuration = () => {
     const navigate = useNavigate();
     const [numPlayers, setNumPlayers] = useState(0);
+    const [numBots, setNumBots] = useState(0);
     const [config, setConfig] = useState(BASE_GAME_CONFIG);
     const [formsSubmitted, setFormsSubmitted] = useState([false, false]);
     const [submitsDisabled, setSubmitsDisabled] = useState([false, true]);
@@ -23,7 +24,7 @@ export const Configuration = () => {
         async function startGameRequest() {
             const players: { [id: string]: string } = {}
             config.playerNames.forEach((playerName) => players[playerName] = "human");
-            new Array(config.numberOfBots).fill("").forEach((elem, idx) => players[`Bot${idx + 1}`] = "bot");
+            new Array(config.numberOfBots).fill("").forEach((elem, idx) => players[`Bot${idx + 1}`] = "bot_dynamic_reward"); //currently best bot
 
             const response = await fetch("http://127.0.0.1:5000/start_game", {
                 method: "POST",
@@ -60,6 +61,12 @@ export const Configuration = () => {
         setNumPlayers(numHumans);
         const playerNames = new Array(numHumans).fill("Player");
         setConfig({...config, numberOfHumans: numHumans, playerNames: playerNames});
+    }
+
+    const onBotsNumberChange = (e: React.FormEvent<HTMLInputElement>) => {
+        const numBots = parseInt(e.currentTarget.value);
+        setNumBots(numBots);
+        setConfig({...config, numberOfBots: numBots});
     }
 
     const submitAmounts = (event: React.SyntheticEvent) => {
@@ -135,13 +142,13 @@ export const Configuration = () => {
                     <InputForm onSubmit={submitAmounts}>
                         <div>
                             <label htmlFor="humans">Number of humans:</label>
-                            <input id="humans" name="humans" type="number" min={0} max={4}
+                            <input id="humans" name="humans" type="number" min={0} max={4 - numBots}
                                    onChange={onHumansNumberChange} disabled={formsSubmitted[0]}/>
                         </div>
                         <div>
                             <label htmlFor="bots">Number of bots:</label>
                             <input id="bots" name="bots" type="number" min={numPlayers === 0 ? 1 : 0}
-                                   max={4 - numPlayers} disabled={formsSubmitted[0]}/>
+                                   max={4 - numPlayers} disabled={formsSubmitted[0]} onChange={onBotsNumberChange}/>
                         </div>
                         <ActionButton type="submit" text="Submit" color={"blue"} onClick={() => {
                             alert("player amounts submitted")

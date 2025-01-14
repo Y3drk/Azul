@@ -1,6 +1,6 @@
 import random
 
-from backend.players.Player import Player
+from players.Player import Player
 
 
 class StupidHeuraPlayer(Player):

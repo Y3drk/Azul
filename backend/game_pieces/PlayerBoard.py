@@ -1,4 +1,4 @@
-from backend.game_pieces.TilePlace import TilePlace
+from game_pieces.TilePlace import TilePlace
 
 
 class PlayerBoard:
