@@ -142,12 +142,12 @@ export const Configuration = () => {
                     <InputForm onSubmit={submitAmounts}>
                         <div>
                             <label htmlFor="humans">Number of humans:</label>
-                            <input id="humans" name="humans" type="number" min={0} max={4 - numBots}
+                            <input id="humans" name="humans" type="number" min={0} max={4 - numBots} value={numPlayers}
                                    onChange={onHumansNumberChange} disabled={formsSubmitted[0]}/>
                         </div>
                         <div>
                             <label htmlFor="bots">Number of bots:</label>
-                            <input id="bots" name="bots" type="number" min={numPlayers === 0 ? 1 : 0}
+                            <input id="bots" name="bots" type="number" min={numPlayers === 0 ? 1 : 0} value={numBots}
                                    max={4 - numPlayers} disabled={formsSubmitted[0]} onChange={onBotsNumberChange}/>
                         </div>
                         <ActionButton type="submit" text="Submit" color={"blue"} onClick={() => {

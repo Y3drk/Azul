@@ -11,9 +11,10 @@ export type MoveProps = {
     currentGameState: GameState;
     currentPlayer: string;
     onMove: (workshop: number, color: string, patternLane: number) => void;
+    botsOnly: boolean;
 }
 
-export const Move = ({currentGameState, onMove, currentPlayer}: MoveProps) => {
+export const Move = ({currentGameState, onMove, currentPlayer, botsOnly}: MoveProps) => {
     const [chosenWorkshop, setChosenWorkshop] = useState(0);
     const [chosenPatternLane, setChosenPatternLane] = useState(0);
 
@@ -122,7 +123,13 @@ export const Move = ({currentGameState, onMove, currentPlayer}: MoveProps) => {
 
     useEffect(() => {
         if (currentPlayer.slice(0,3) === "Bot"){
-            onMove(chosenWorkshop, selectedValue, chosenPatternLane);
+
+            setTimeout(() => {
+                console.log("Bot move detected", currentPlayer, currentPlayer.slice(0,3) === "Bot", currentPlayer.slice(0,3));
+                console.log(currentGameState);
+                console.log("----------------");
+                onMove(chosenWorkshop, selectedValue, chosenPatternLane)
+            }, 5000);
         }
     }, [currentPlayer]);
 
@@ -168,7 +175,7 @@ export const Move = ({currentGameState, onMove, currentPlayer}: MoveProps) => {
             <div>
                 <label htmlFor="workshopChoice">Choose Workshop:</label>
                 <input id="workshopChoice" name="workshopChoice" type="number" min={0} max={currentGameState.workshopState.factories.length} defaultValue={0}
-                       onChange={adaptColors}/>
+                       onChange={adaptColors} disabled={botsOnly}/>
             </div>
             <RadioButtonGroup
                 label="Select color:"
@@ -178,10 +185,10 @@ export const Move = ({currentGameState, onMove, currentPlayer}: MoveProps) => {
             <div>
                 <label htmlFor="laneChoice">Choose Lane:</label>
                 <input id="laneChoice" name="laneChoice" type="number" min={0} max={5} onChange={adaptPatternLane}
-                       defaultValue={0}/>
+                       defaultValue={0} disabled={botsOnly}/>
             </div>
             <div>
-                <ActionButton text="Validate" color="orange" onClick={checkMoveValidity} isDisabled={false}
+                <ActionButton text="Validate" color="orange" onClick={checkMoveValidity} isDisabled={botsOnly}
                               type="button"/>
                 <ActionButton type="button" text="Make a move" color={"blue"} onClick={handleMove} isDisabled={!currentMoveLegal}/>
             </div>

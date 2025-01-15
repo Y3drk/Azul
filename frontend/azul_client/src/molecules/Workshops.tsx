@@ -1,5 +1,5 @@
 import React from 'react';
-import {Factory, FactoryID, FactoryInfo, Tile, TilesInfo} from "../atoms/Factory";
+import {Factory, FactoryID, FactoryInfo, Tile, TileInfo, TilesInfo} from "../atoms/Factory";
 import styled from "styled-components";
 
 export type WorkshopInfo = {
@@ -13,7 +13,7 @@ export const Workshops = (props: WorkshopInfo) => {
         <Market>
             <FactoryID>ID:{props.factories.length}</FactoryID>
             {props.marketTiles.map((tile) => (
-            <Tile key={`marketTile${tile.color}`} container_border="none" color={tile.color}><p>{tile.amount}</p></Tile>
+            <Tile key={`marketTile${tile.color}`} container_border="none" color={tile.color}><TileInfo>{tile.amount}</TileInfo></Tile>
         ))}
         </Market>
     </Workshop>
@@ -38,7 +38,7 @@ const Workshop = styled.div`
     width: 30vw;
     height: 80vh;
     
-    background-color: rosybrown;
+    background-color: oldlace;
     
     display: flex;
     flex-direction: row;

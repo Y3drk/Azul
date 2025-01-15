@@ -18,7 +18,7 @@ export const Play = () => {
     const [currentGameState, setCurrentGameState] = useState<GameState>(location.state.initial_game_state);
     const [currentPlayer, setCurrentPlayer] = useState(0);
 
-    const players = location.state.initial_game_state.playerBoardsState.map((boardState: PlayerBoardState) => boardState.playerName);
+    const players:string[] = location.state.initial_game_state.playerBoardsState.map((boardState: PlayerBoardState) => boardState.playerName);
 
     const quitGame = () => {
             async function endGameRequest() {
@@ -96,7 +96,7 @@ export const Play = () => {
                 <Workshops {...currentGameState.workshopState} />
             </div>
             <PlayerSide>
-                <Move currentGameState={currentGameState} currentPlayer={players[currentPlayer]} onMove={makeMove}/>
+                <Move currentGameState={currentGameState} currentPlayer={players[currentPlayer]} onMove={makeMove} botsOnly={players.every((player) => player.slice(0,3) === "Bot")}/>
                 {currentGameState.playerBoardsState.map((player, idx) => {
                     if (idx >= 2) {
                         return <PlayerBoard {...player}/>

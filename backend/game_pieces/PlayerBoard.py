@@ -1,5 +1,8 @@
 from game_pieces.TilePlace import TilePlace
 
+FULL_ROW_REWARD = 2
+FULL_COLUMN_REWARD = 7
+FULL_COLOR_REWARD = 10
 
 class PlayerBoard:
     def __init__(self, tile_manager):
@@ -193,12 +196,12 @@ class PlayerBoard:
                 if self.wall[i][j].current_color is None:
                     full_color_dict[self.wall[i][j].expected_color] = False
             if full_row:
-                points_for_rows += 5
+                points_for_rows += FULL_ROW_REWARD
             if full_column:
-                points_for_columns += 7
+                points_for_columns += FULL_COLUMN_REWARD
         for color, full_color in full_color_dict.items():
             if full_color:
-                points_for_colors += 10
+                points_for_colors += FULL_COLOR_REWARD
         return points_for_rows, points_for_columns, points_for_colors
 
     def print(self):
