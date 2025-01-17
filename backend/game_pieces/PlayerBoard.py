@@ -27,21 +27,23 @@ class PlayerBoard:
         for tile in self.wall[row_id]:
             if tile.expected_color == color:
                 return tile.current_color is None
+        return False
 
     def possible_puts(self, color: int) -> list[int]:
         result = [-1]
         for row_id in range(5):
             if self.is_valid_place(row_id, color):
                 result.append(row_id)
+        print(f"For color {color}: {result}")
 
         return result
 
     def calc_reward(self, row_id, color, number_of_tiles):
         if row_id == -1:
             return 0
-        filled_row_part = (number_of_tiles + sum(
+        filled_row_part = min(1, (number_of_tiles + sum(
             [1 if tile.current_color is not None else 0 for tile in self.pattern_lines[row_id]]
-        )) / (row_id + 1)
+        )) / (row_id + 1))
         column_id = (row_id + color) % 5
 
         expected_points_row = 0
@@ -70,11 +72,11 @@ class PlayerBoard:
         short_term_score = expected_points_row + expected_points_column + 1
         if expected_points_row > 0 and expected_points_column > 0:
             short_term_score += 1
-        return short_term_score * filled_row_part
+        return short_term_score * filled_row_part - self.calc_move_penalty(row_id, color, number_of_tiles)
 
     def calc_move_penalty(self, row_id, color, number_of_tiles):
         penalty = 0
-        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+        if row_id>=0 and self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
             for place in self.pattern_lines[row_id]:
                 if not place.blocked and place.current_color is None:
                     number_of_tiles -= 1
