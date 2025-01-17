@@ -86,3 +86,12 @@ export const Color2Number = (color: TILES_COLORS): number => {
     }
     return -1;
 }
+
+export const checkForGameEnd = (wall: boolean[][]) => {
+    for (let idx = 0; idx < 5; idx++){
+        if (wall[idx].every((elem) => elem)){
+            return true;
+        }
+    }
+    return false;
+}

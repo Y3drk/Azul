@@ -5,6 +5,7 @@ import {WALL_COLORS} from "../auxiliary/constants";
 import {RadioButtonGroup} from "../components/RadioGroup";
 import {FactoryInfo} from "../atoms/Factory";
 import {GameState, TILES_COLORS} from "../auxiliary/types";
+import {checkForGameEnd} from "../auxiliary/functions";
 
 
 export type MoveProps = {
@@ -123,13 +124,19 @@ export const Move = ({currentGameState, onMove, currentPlayer, botsOnly}: MovePr
 
     useEffect(() => {
         if (currentPlayer.slice(0,3) === "Bot"){
-
-            setTimeout(() => {
-                console.log("Bot move detected", currentPlayer, currentPlayer.slice(0,3) === "Bot", currentPlayer.slice(0,3));
-                console.log(currentGameState);
-                console.log("----------------");
-                onMove(chosenWorkshop, selectedValue, chosenPatternLane)
-            }, 5000);
+            // setTimeout(() => {
+            //     console.log("Bot move detected", currentPlayer, currentPlayer.slice(0,3) === "Bot", currentPlayer.slice(0,3));
+            //     console.log(currentGameState);
+            //     console.log("----------------");
+                for (let boardState of currentGameState.playerBoardsState){
+                    if (boardState.playerName === currentPlayer){
+                        if (!checkForGameEnd(boardState.wall)){
+                            onMove(chosenWorkshop, selectedValue, chosenPatternLane)
+                        }
+                        break;
+                    }
+                }
+            // }, 3000);
         }
     }, [currentPlayer]);
 
@@ -188,7 +195,7 @@ export const Move = ({currentGameState, onMove, currentPlayer, botsOnly}: MovePr
                        defaultValue={0} disabled={botsOnly}/>
             </div>
             <div>
-                <ActionButton text="Validate" color="orange" onClick={checkMoveValidity} isDisabled={botsOnly}
+                <ActionButton text="Validate" color="orange" onClick={checkMoveValidity} isDisabled={botsOnly || currentPlayer.slice(0,3) === "Bot"}
                               type="button"/>
                 <ActionButton type="button" text="Make a move" color={"blue"} onClick={handleMove} isDisabled={!currentMoveLegal}/>
             </div>

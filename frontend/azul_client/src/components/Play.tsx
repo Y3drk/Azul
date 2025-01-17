@@ -74,7 +74,6 @@ export const Play = () => {
 
             setCurrentGameState(parseBackendGameState(newGameState));
             setCurrentPlayer((prev) => (prev+1)%players.length);
-
         });
     };
 
