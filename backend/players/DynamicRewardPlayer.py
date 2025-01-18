@@ -13,8 +13,6 @@ class DynamicRewardPlayer(Player):
         for possible_move in possible_moves:
             possible_move["reward"] = self.player_board.calc_reward(possible_move["to"], possible_move["color"],
                                                                            possible_move["number"])
-        for move in possible_moves:
-            print(move)
 
         sorted_possible_moves = sorted(possible_moves, key=lambda x: -x['reward'])
         filtered_possible_moves = [dict(move) for move in sorted_possible_moves if

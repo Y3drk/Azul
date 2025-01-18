@@ -43,8 +43,6 @@ class Player(ABC):
                 full_move = deepcopy(move)
                 full_move["to"] = possible_put
                 possible_moves.append(full_move)
-        for move in possible_moves:
-            print(move)
         return possible_moves
 
     def print(self):
