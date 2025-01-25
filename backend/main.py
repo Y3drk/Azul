@@ -14,7 +14,7 @@ pd.set_option('display.width', None)  # Adjust to match your terminal's width
 pd.set_option('display.colheader_justify', 'left')  # Align headers to the left
 
 
-def draw_plots(bots_scores_winning, bots_scores_losing):
+def draw_plots(bots_scores_winning, bots_scores_losing, bot_names):
     # print(bots)
     # print(bots_wins)
     # print(bots_scores_winning)
@@ -31,8 +31,11 @@ def draw_plots(bots_scores_winning, bots_scores_losing):
         if -1 in parsed_data_losing[bot_name].keys():
             del parsed_data_losing[bot_name][-1]
 
-    # max_count = ceil(max(max(counts.values()) for counts in parsed_data_winning.values()) / 50) * 50
-    # max_count = max(ceil(max(max(counts.values()) for counts in parsed_data_losing.values()) / 50) * 50, max_count)
+    max_count_y = np.ceil((max(max(counts.values()) for counts in parsed_data_winning.values())+1) / 10) * 10
+    max_count_y = max(np.ceil((max(max(counts.values()) for counts in parsed_data_losing.values())+1) / 10) * 10, max_count_y)
+
+    max_count_x = np.ceil((max(max(scores.keys()) for scores in parsed_data_winning.values())+1) / 10) * 10
+    max_count_x = max(np.ceil((max(max(scores.keys()) for scores in parsed_data_losing.values())+1) / 10) * 10, max_count_x)
 
     # print(parsed_data_winning)
     # print(parsed_data_losing)
@@ -42,27 +45,29 @@ def draw_plots(bots_scores_winning, bots_scores_losing):
     for i, (name, value_counts) in enumerate(parsed_data_winning.items()):
         sorted_keys = sorted(value_counts.keys())
         sorted_values = [value_counts[key] for key in sorted_keys]
-
-        axes[i][0].bar(sorted_keys, sorted_values, color='blue')
+        axes[i][0].plot(sorted_keys, sorted_values, color='blue')
         # axes[i].plot(values, label=bots[name])
-        axes[i][0].set_title(f'{bots[name]} when winning')
+        axes[i][0].set_title(f'{name} when winning')
         axes[i][0].set_ylabel('Times')
         axes[i][0].set_xlabel('Scores')
         # axes[i].legend()
         axes[i][0].grid()
-        # axes[i][0].set_ylim(0, max_count)
+        axes[i][0].set_ylim(0, max_count_y)
+        axes[i][0].set_xlim(0, max_count_x)
+
     for i, (name, value_counts) in enumerate(parsed_data_losing.items()):
         sorted_keys = sorted(value_counts.keys())
         sorted_values = [value_counts[key] for key in sorted_keys]
 
         axes[i][1].bar(sorted_keys, sorted_values, color='blue')
         # axes[i].plot(values, label=bots[name])
-        axes[i][1].set_title(f'{bots[name]} when losing')
+        axes[i][1].set_title(f'{name} when losing')
         axes[i][1].set_ylabel('Times')
         axes[i][1].set_xlabel('Scores')
         # axes[i].legend()
         axes[i][1].grid()
-        # axes[i][1].set_ylim(0, max_count)
+        axes[i][1].set_ylim(0, max_count_y)
+        axes[i][1].set_xlim(0, max_count_x)
 
     # Add a shared X label
 
@@ -118,7 +123,7 @@ def show_table(bots_scores_winning, bots_scores_losing):
     print(df)
 
 
-def contest(N, bot_names, bot_types):
+def contest(N, bot_names, bot_types, bot_conf_files):
     # print(N, bot_names, bot_types)
     server = Server()
 
@@ -127,8 +132,8 @@ def contest(N, bot_names, bot_types):
     bots_scores_winning = {}
     bots_scores_losing = {}
 
-    for bot_name, bot_type in zip(bot_names, bot_types):
-        bots[bot_name] = bot_type
+    for bot_name, bot_type, bot_conf_file in zip(bot_names, bot_types, bot_conf_files):
+        bots[bot_name] = (bot_type, bot_conf_file)
         bots_wins[bot_name] = 0
         bots_scores_winning[bot_name] = []
         bots_scores_losing[bot_name] = []
@@ -164,7 +169,8 @@ def contest(N, bot_names, bot_types):
     # print(bots_wins)
     # print(bots_scores_winning)
     # print(bots_scores_losing)
-    print(f"Average iteration number: {round(avg_iterations/N,4)}")
+    print(f"Average iteration number: {round(avg_iterations/N,2)}")
+    # print(bots, bots_wins, bots_scores_winning, bots_scores_losing)
     return bots, bots_wins, bots_scores_winning, bots_scores_losing
 
 
@@ -176,25 +182,51 @@ def contest(N, bot_names, bot_types):
 # # bot_types = ["bot_lowest_penalty", "bot_dynamic_reward"]
 #
 # bots, bots_wins, bots_scores_winning, bots_scores_losing = contest(N, bot_names, bot_types)
-# # show_table(bots_scores_winning, bots_scores_losing)
+# show_table(bots_scores_winning, bots_scores_losing)
 # draw_plots(bots_scores_winning, bots_scores_losing)
 
 
-bot_names_all = ['Bot1', 'Bot2', 'Bot3', 'Bot4', 'Bot5']
-bot_types_all = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura", "bot_dynamic_reward"]
-game_results = pd.DataFrame(index=bot_types_all, columns=bot_types_all)
+# bot_names_all = ['Bot1', 'Bot2', 'Bot3', 'Bot4', 'Bot5']
+# bot_types_all = ["bot_random", "bot_most_tiles", "bot_lowest_penalty", "bot_stupid_heura", "bot_dynamic_reward"]
+# bot_conf_files_all = ["", "", "", "", "configurations/dynamic_10-0.json"]
 
-N = 10
-for i, row_bot in enumerate(bot_types_all):
-    for j, col_bot in enumerate(bot_types_all):
+bot_names_all = ['Bot0-10', 'Bot3-7', 'Bot5-5', 'Bot7-3', 'Bot10-0']
+bot_types_all = ["bot_dynamic_reward", "bot_dynamic_reward", "bot_dynamic_reward", "bot_dynamic_reward", "bot_dynamic_reward"]
+bot_conf_files_all = ["configurations/dynamic_0-10.json",
+                      "configurations/dynamic_3-7.json",
+                      "configurations/dynamic_5-5.json",
+                      "configurations/dynamic_7-3.json",
+                      "configurations/dynamic_10-0.json"]
+
+game_results = pd.DataFrame(index=bot_names_all, columns=bot_names_all)
+
+N = 100
+bots_scores_winning_total = {name: [] for name in bot_names_all}
+bots_scores_losing_total = {name: [] for name in bot_names_all}
+for i, row_bot in enumerate(bot_names_all):
+    for j, col_bot in enumerate(bot_names_all):
         if i > j:
-            bot_names = [bot_names_all[i] + "0", bot_names_all[j] + "1"]
+            # bot_names = [bot_names_all[i] + "0", bot_names_all[j] + "1"]
+            bot_names = [bot_names_all[i], bot_names_all[j]]
             bot_types = [bot_types_all[i], bot_types_all[j]]
+            bot_conf_files = [bot_conf_files_all[i], bot_conf_files_all[j]]
 
-            bots, bots_wins, bots_scores_winning, bots_scores_losing = contest(N, bot_names, bot_types)
+            bots, bots_wins, bots_scores_winning, bots_scores_losing = contest(N, bot_names, bot_types, bot_conf_files)
+
+            bots_scores_winning_total[bot_names[0]] = (bots_scores_winning_total[bot_names[0]] +
+                                         bots_scores_winning[bot_names[0]])
+            bots_scores_losing_total[bot_names[0]] = (bots_scores_losing_total[bot_names[0]] +
+                                         bots_scores_losing[bot_names[0]])
+            bots_scores_winning_total[bot_names[1]] = (bots_scores_winning_total[bot_names[1]] + 
+                                         bots_scores_winning[bot_names[1]])
+            bots_scores_losing_total[bot_names[1]] = (bots_scores_losing_total[bot_names[1]] +
+                                         bots_scores_losing[bot_names[1]])
+
             game_results.loc[row_bot, col_bot] = str(round(bots_wins[bot_names[1]] / N * 100, 2)) + "%"
             game_results.loc[col_bot, row_bot] = str(round(bots_wins[bot_names[0]] / N * 100, 2)) + "%"
 
 # Print the resulting table
-print(f"Numbers in table represents how many games were won by bot named in rows headers, tested on {N} games.")
+draw_plots(bots_scores_winning_total, bots_scores_losing_total, bot_names_all)
+
+print(f"\n\nNumbers in table represents how many games were won \\\nby bot named in first row, tested on {N} games.")
 print(game_results)

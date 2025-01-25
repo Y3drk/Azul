@@ -43,53 +43,6 @@ class PlayerBoard:
                 result.append(row_id)
         return result
 
-    def calc_reward(self, row_id, color, number_of_tiles):
-        if row_id == -1:
-            # print(0, 0, -self.calc_move_penalty(row_id, color, number_of_tiles))
-            return -self.calc_move_penalty(row_id, color, number_of_tiles)
-        filled_row_part = min(1, (number_of_tiles + sum(
-            [1 if tile.current_color is not None else 0 for tile in self.pattern_lines[row_id]]
-        )) / (row_id + 1))
-        column_id = (row_id + color) % 5
-
-        expected_points_row = 0
-        for n in range(column_id - 1, -1, -1):
-            if self.wall[row_id][n].current_color is not None:
-                expected_points_row += 1
-            else:
-                break
-        for n in range(column_id + 1, 5):
-            if self.wall[row_id][n].current_color is not None:
-                expected_points_row += 1
-            else:
-                break
-
-        expected_points_column = 0
-        for n in range(row_id - 1, -1, -1):
-            if self.wall[n][column_id].current_color is not None:
-                expected_points_column += 1
-            else:
-                break
-        for n in range(row_id + 1, 5):
-            if self.wall[n][column_id].current_color is not None:
-                expected_points_column += 1
-            else:
-                break
-        short_term_score = expected_points_row + expected_points_column + 1
-        if expected_points_row > 0 and expected_points_column > 0:
-            short_term_score += 1
-
-        long_term_score = self.predict_final_reward(row_id, color)
-
-        short_term_multiplayer = 0
-        long_term_multiplayer = 1
-
-        # print(short_term_score * filled_row_part * short_term_multiplayer, long_term_score * filled_row_part * long_term_multiplayer, -self.calc_move_penalty(row_id, color, number_of_tiles))
-
-        return short_term_score * filled_row_part * short_term_multiplayer \
-            + long_term_score * filled_row_part * long_term_multiplayer \
-            - self.calc_move_penalty(row_id, color, number_of_tiles)
-
     def calc_move_penalty(self, row_id, color, number_of_tiles):
         penalty = 0
         if row_id >= 0 and self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[
