@@ -40,12 +40,12 @@ def draw_plots(bots_scores_winning, bots_scores_losing, bot_names):
     # print(parsed_data_winning)
     # print(parsed_data_losing)
 
-    fig, axes = plt.subplots(len(bot_names), 2, figsize=(8, 10), sharex=True)
+    fig, axes = plt.subplots(len(bot_names), 2, figsize=(16, 20), sharex=True)
 
     for i, (name, value_counts) in enumerate(parsed_data_winning.items()):
         sorted_keys = sorted(value_counts.keys())
         sorted_values = [value_counts[key] for key in sorted_keys]
-        axes[i][0].plot(sorted_keys, sorted_values, color='blue')
+        axes[i][0].bar(sorted_keys, sorted_values, color='blue')
         # axes[i].plot(values, label=bots[name])
         axes[i][0].set_title(f'{name} when winning')
         axes[i][0].set_ylabel('Times')

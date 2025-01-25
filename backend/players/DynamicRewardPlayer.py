@@ -14,6 +14,10 @@ class DynamicRewardPlayer(Player):
         self.load_configurations()
 
     def load_configurations(self):
+        if self.conf_file == "":
+            self.conf_file = "configurations/dynamic_7-3.json"
+            self.conf_file = "configurations/dynamic_0-10.json"
+
         with open(self.conf_file, "r") as f:
             config = json.load(f)
         self.short_term_multiplayer = config["short_term_multiplayer"]

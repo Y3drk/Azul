@@ -110,6 +110,9 @@ def start_game():
                                "bot_stupid_heura", "bot_q", "bot_dynamic_reward"]:
             return jsonify({"error": f"Invalid type of player {player_type}"}), 400
 
+    for p in players.keys():
+        players[p] = (players[p], "")
+
     response = server.start_game(players)
     return jsonify(response), response[1]
 
