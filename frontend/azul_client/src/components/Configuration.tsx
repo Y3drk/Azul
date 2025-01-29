@@ -201,7 +201,7 @@ const Wrapper = styled.div`
     height: 50%;
 `;
 
-export const HorizontalWrapper = styled.div<{ display_gap?: number, specified_width?: number }>`
+export const HorizontalWrapper = styled.div<{ display_gap?: number, specified_width?: number , bottom_pad?: number}>`
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -211,6 +211,7 @@ export const HorizontalWrapper = styled.div<{ display_gap?: number, specified_wi
 
     gap: ${(props) => props.display_gap}%;
     width: ${(props) => props.specified_width}%;
+    padding-bottom: ${(props) => props.bottom_pad}px;
 `;
 
 const FormWrapper = styled.div`

@@ -4,14 +4,18 @@ import {ActionButton} from "../atoms/ActionButton";
 import {useLocation, useNavigate} from "react-router-dom";
 import {HorizontalWrapper} from "./Configuration";
 import styled from "styled-components";
-import {SCORING_CATEGORIES} from "../auxiliary/constants";
-import {BackendGameState} from "../auxiliary/types";
+import {SCORING_CATEGORIES, WALL_COLORS} from "../auxiliary/constants";
+import {BackendGameState, GameState} from "../auxiliary/types";
+import {parseBackendGameState} from "../auxiliary/functions";
+import {WallTile} from "../atoms/Factory";
+import {WallContainer} from "../molecules/PlayerBoard";
 
 
 export const Summary = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const finalGameState: BackendGameState = location.state.finalGameState;
+    const parsedGameState: GameState = parseBackendGameState(finalGameState);
     const finalResults = finalGameState.players.map((player) => ({
         playerName: player.player_name,
         totalPoints: player.score.base + player.score.colors + player.score.horizontals + player.score.verticals,
@@ -60,9 +64,34 @@ export const Summary = () => {
                 <ScoreUl>{finalResults.map((elem, idx) => (<li key={`TOTAL${idx}`}>{elem.totalPoints}</li>))}</ScoreUl>
             </ScoresDiv>
         </ScoreWrapper>
+        <HorizontalWrapper display_gap={20} bottom_pad={20}>
+            {parsedGameState.playerBoardsState.map((playerFinalBoard) => (
+              <BoardWrapper>
+                  <p>{playerFinalBoard.playerName}</p>
+                  <WallContainer>
+                      {WALL_COLORS.map((row, rowIdx) => {
+                          return row.map((elem, colIdx) => (
+                              <WallTile key={`wallTile${playerFinalBoard.playerName}${rowIdx}${colIdx}`} grid_col={colIdx + 1} grid_row={rowIdx + 1} color={elem}
+                                        placed={playerFinalBoard.wall[rowIdx][colIdx]} container_border="none"/>
+                          ));
+                      })}
+                  </WallContainer>
+              </BoardWrapper>
+                )
+            )}
+        </HorizontalWrapper>
         <ActionButton text="New Game" color="blue" onClick={startNewGame} isDisabled={false} type="button"/>
     </>
 };
+
+const BoardWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    
+    justify-content: flex-start;
+    align-items: center;
+`;
 
 const ScoreWrapper = styled(HorizontalWrapper)`
     padding-bottom: 40px;
