@@ -41,7 +41,7 @@ class Server:
             return {"message": "Game not started yet!"}, 400
         game_state = self.game.get_game_state()
         self.game = None
-        return {"message": "Game ended successfully", "current_state": game_state}, 200
+        return {"message": "Game ended successfully", "current_state": game_state}, 211
 
     def player_move(self, player_name, move):
         if self.game is None:

@@ -96,7 +96,7 @@ const ColorfulTileBorder = styled.div<{ color: string }>`
     border: 1px solid ${(props) => props.color};
 `;
 
-const WallContainer = styled.div`
+export const WallContainer = styled.div`
     width: fit-content;
     height: fit-content;
 

@@ -1,5 +1,11 @@
 import {WorkshopInfo} from "../molecules/Workshops";
 import {ConfigurationInfo, GameState, TILES_COLORS} from "./types";
+import turquoise_tile from "../assets/azul_turquoise_tile.png";
+import black_tile from "../assets/azul_black_tile.png";
+import orange_tile from "../assets/azul_orange_tile.png";
+import blue_tile from "../assets/azul_blue_tile.png";
+import soap_tile from "../assets/azul_soap_tile.png";
+import red_tile from "../assets/azul_red_tile.png";
 
 
 export const mockTiles: WorkshopInfo = {
@@ -217,4 +223,13 @@ export const NUMBER2COLOR: {[id:number]: TILES_COLORS} = {
     3: TILES_COLORS.BLACK,
     4: TILES_COLORS.TURQUOISE,
     5: TILES_COLORS.WHITE,
+}
+
+export const COLOR2IMAGE: {[id:string]: string} = {
+    "red": red_tile,
+    "orange": orange_tile,
+    "blue": blue_tile,
+    "black": black_tile,
+    "turquoise": turquoise_tile,
+    "white": soap_tile,
 }

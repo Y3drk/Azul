@@ -3,7 +3,7 @@ import random
 
 from numpy import sort
 
-from backend.players.Player import Player
+from players.Player import Player
 
 
 class QPlayer(Player):

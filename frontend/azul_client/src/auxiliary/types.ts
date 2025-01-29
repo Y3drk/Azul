@@ -31,13 +31,13 @@ export enum TILES_COLORS {
     BLUE = "blue",
     BLACK = "black",
     TURQUOISE = "turquoise",
-    WHITE="white",
-    EMPTY="beige"
+    WHITE = "white",
+    EMPTY = "beige"
 }
 
 export type BackendPlayerState = {
     player_name: string;
-    player_type: "human" | "bot";
+    player_type: "human" | "bot" | "bot_random" | "bot_most_tiles" | "bot_lowest_penalty" | "bot_stupid_heura" | "bot_q" | "bot_dynamic_reward";
     score: {
         base: number;
         colors: number;
@@ -45,15 +45,15 @@ export type BackendPlayerState = {
         verticals: number;
     };
     player_board: {
-        floor_line: (null|number)[];
-        pattern_lines: (null|number)[][];
-        wall: (null|number)[][];
+        floor_line: (null | number)[];
+        pattern_lines: (null | number)[][];
+        wall: (null | number)[][];
     };
 };
 
 export type BackendGameState = {
     center: number[];
-    factories: {[id: number]:number[]};
+    factories: { [id: number]: number[] };
     players: BackendPlayerState[];
 };
 
