@@ -4,7 +4,6 @@ FULL_ROW_REWARD = 2
 FULL_COLUMN_REWARD = 7
 FULL_COLOR_REWARD = 10
 
-
 class PlayerBoard:
     def __init__(self, tile_manager):
         self.tile_manager = tile_manager
