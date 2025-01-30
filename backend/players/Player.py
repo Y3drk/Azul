@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from copy import deepcopy
 
 class Player(ABC):
     def __init__(self, player_id, player_name, player_type, player_board, tile_manager, game):
@@ -37,10 +37,10 @@ class Player(ABC):
         possible_moves = []
         possible_picks = self.game.possible_picks()
         for possible_pick in possible_picks:
-            move = dict(possible_pick)
+            move = deepcopy(possible_pick)
             possible_puts = self.player_board.possible_puts(move["color"])
             for possible_put in possible_puts:
-                full_move = dict(move)
+                full_move = deepcopy(move)
                 full_move["to"] = possible_put
                 possible_moves.append(full_move)
         return possible_moves

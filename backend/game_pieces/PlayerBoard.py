@@ -24,57 +24,28 @@ class PlayerBoard:
                 self.current_pattern_lines_colors[row_id] != -1:
             return False
 
+        maybe_valid_wall = False
         for tile in self.wall[row_id]:
-            if tile.expected_color == color:
-                return tile.current_color is None
+            if tile.expected_color == color and tile.current_color is None:
+                maybe_valid_wall = True
+
+        maybe_valid_pattern_line = False
+        for tile in self.pattern_lines[row_id]:
+            if tile.blocked is False and tile.current_color is None:
+                maybe_valid_pattern_line = True
+        return maybe_valid_wall and maybe_valid_pattern_line
 
     def possible_puts(self, color: int) -> list[int]:
         result = [-1]
         for row_id in range(5):
             if self.is_valid_place(row_id, color):
                 result.append(row_id)
-
         return result
-
-    def calc_reward(self, row_id, color, number_of_tiles):
-        if row_id == -1:
-            return 0
-        filled_row_part = (number_of_tiles + sum(
-            [1 if tile.current_color is not None else 0 for tile in self.pattern_lines[row_id]]
-        )) / (row_id + 1)
-        column_id = (row_id + color) % 5
-
-        expected_points_row = 0
-        for n in range(column_id - 1, -1, -1):
-            if self.wall[row_id][n].current_color is not None:
-                expected_points_row += 1
-            else:
-                break
-        for n in range(column_id + 1, 5):
-            if self.wall[row_id][n].current_color is not None:
-                expected_points_row += 1
-            else:
-                break
-
-        expected_points_column = 0
-        for n in range(row_id - 1, -1, -1):
-            if self.wall[n][column_id].current_color is not None:
-                expected_points_column += 1
-            else:
-                break
-        for n in range(row_id + 1, 5):
-            if self.wall[n][column_id].current_color is not None:
-                expected_points_column += 1
-            else:
-                break
-        short_term_score = expected_points_row + expected_points_column + 1
-        if expected_points_row > 0 and expected_points_column > 0:
-            short_term_score += 1
-        return short_term_score * filled_row_part
 
     def calc_move_penalty(self, row_id, color, number_of_tiles):
         penalty = 0
-        if self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[row_id] == color:
+        if row_id >= 0 and self.current_pattern_lines_colors[row_id] == -1 or self.current_pattern_lines_colors[
+            row_id] == color:
             for place in self.pattern_lines[row_id]:
                 if not place.blocked and place.current_color is None:
                     number_of_tiles -= 1
@@ -164,6 +135,7 @@ class PlayerBoard:
                             score += 1
                 self.tile_manager.discard([tile.current_color for tile in self.pattern_lines[row]])
                 self.pattern_lines[row] = [TilePlace() if row + j >= 4 else TilePlace(blocked=True) for j in range(5)]
+                self.current_pattern_lines_colors[row] = -1
 
         for i, tile in enumerate(self.floor_line):
             if tile.current_color is not None:
@@ -179,6 +151,23 @@ class PlayerBoard:
         self.floor_line = [TilePlace() for _ in range(7)]
 
         return score
+
+    def predict_final_reward(self, row_id, color):
+        column_id = (color + row_id) % 5
+
+        full_row = True
+        full_column = True
+        full_color = True
+        for i in range(5):
+            if self.wall[row_id][i].current_color is None or i == column_id:
+                full_row = False
+            if self.wall[i][column_id].current_color is None or i == row_id:
+                full_column = False
+            if self.wall[(i + row_id) % 5][(i + column_id) % 5].current_color is None or (
+                    i == row_id and i == column_id):
+                full_column = False
+
+        return full_row * FULL_ROW_REWARD + full_column * FULL_COLUMN_REWARD + full_color * FULL_COLOR_REWARD
 
     def calculate_final_score(self):
         points_for_rows = 0

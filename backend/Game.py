@@ -17,7 +17,7 @@ class Game:
         self.players_number = len(players.items())
         self.tile_manager = TileManager()
         self.players = {}
-        for i, (player_name, player_type) in enumerate(players.items()):
+        for i, (player_name, (player_type, conf_file)) in enumerate(players.items()):
             if player_type == "human":
                 self.players[player_name] = HumanPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
                                                         self.tile_manager, self)
@@ -42,7 +42,7 @@ class Game:
             elif player_type == "bot_dynamic_reward":
                 self.players[player_name] = DynamicRewardPlayer(i, player_name, player_type,
                                                               PlayerBoard(self.tile_manager),
-                                                              self.tile_manager, self)
+                                                              self.tile_manager, self, conf_file)
             elif player_type == "bot":
                 self.players[player_name] = RandomPlayer(i, player_name, player_type, PlayerBoard(self.tile_manager),
                                                          self.tile_manager, self)
